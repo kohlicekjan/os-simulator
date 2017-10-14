@@ -1,1 +1,1 @@
-# os-simulator
+# OS Simulator
