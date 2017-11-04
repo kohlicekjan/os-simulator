@@ -28,7 +28,7 @@ void Shutdown_Kernel() {
 }
 
 void __stdcall Sys_Call(kiv_os::TRegisters &regs) {
-
+	
 	switch (regs.rax.h) {
 		case kiv_os::scIO:		HandleIO(regs);
 	}

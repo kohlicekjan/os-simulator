@@ -1,11 +1,11 @@
 #include "io.h"
 #include "kernel.h"
 #include "handles.h"
+#include "stdio.h"
 
 void HandleIO(kiv_os::TRegisters &regs) {
 
 	//V ostre verzi pochopitelne do switche dejte volani funkci a ne primo vykonny kod
-	
 
 	switch (regs.rax.l) {
 			case kiv_os::scCreate_File: {
@@ -29,6 +29,16 @@ void HandleIO(kiv_os::TRegisters &regs) {
 			}
 			break; //scWriteFile
 
+		case kiv_os::scRead_File: {
+			DWORD read;
+			HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
+			regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
+			if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
+			if (!regs.flags.carry) regs.rax.r = read;
+			else regs.rax.r = GetLastError();
+
+		}
+			break; //scReadFile
 
 		case kiv_os::scClose_Handle: {
 				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
