@@ -2,6 +2,7 @@
 
 #include "kernel.h"
 #include "io.h"
+#include "process.h"
 #include <Windows.h>
 
 HMODULE User_Programs;
@@ -43,7 +44,8 @@ void __stdcall Run_VM() {
 	if (shell) {
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
-		shell(regs);
+		if(createProcess("shell", 0) == S_OK)
+			shell(regs);
 	}
 
 	Shutdown_Kernel();

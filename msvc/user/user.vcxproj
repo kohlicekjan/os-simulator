@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\user\dllmain.cpp" />
+    <ClCompile Include="..\..\src\user\ps.cpp" />
     <ClCompile Include="..\..\src\user\rtl.cpp" />
     <ClCompile Include="..\..\src\user\shell.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\api\api.h" />
+    <ClInclude Include="..\..\src\user\ps.h" />
     <ClInclude Include="..\..\src\user\rtl.h" />
     <ClInclude Include="..\..\src\user\shell.h" />
   </ItemGroup>
