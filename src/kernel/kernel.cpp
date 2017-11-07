@@ -5,9 +5,9 @@
 #include "process.h"
 #include <Windows.h>
 
+
+
 HMODULE User_Programs;
-
-
 
 
 void Set_Error(const bool failed, kiv_os::TRegisters &regs) {
@@ -32,6 +32,9 @@ void __stdcall Sys_Call(kiv_os::TRegisters &regs) {
 	
 	switch (regs.rax.h) {
 		case kiv_os::scIO:		HandleIO(regs);
+			break;
+		case kiv_os::scProc:	HandleProcess(regs);
+			break;
 	}
 
 }
@@ -44,8 +47,15 @@ void __stdcall Run_VM() {
 	if (shell) {
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
-		if(createProcess("shell", 0) == S_OK)
+		kiv_os::TProcess_Startup_Info init;
+		init.std_in = kiv_os::stdInput;
+		init.std_out = kiv_os::stdOutput;
+		init.std_err = kiv_os::stdError;
+		int pid = 0;
+		if (createProcess("shell", &pid, &init) == S_OK) {
 			shell(regs);
+		}
+			
 	}
 
 	Shutdown_Kernel();

@@ -3,7 +3,7 @@
 #include <cstdint>
 
 namespace kiv_os {
-
+	
 
 	using THandle = uint16_t;  //16-bitu, aby se zabranilo predavani instanci trid mezi jadrem a procesem 
 							   //namisto integerovych handlu jako v realnem OS
@@ -54,7 +54,8 @@ namespace kiv_os {
 
 	struct TProcess_Startup_Info {
 		char *arg;			//pointer na parametry
-		THandle stdin, stdout, stderr;	//kazdy, ktery bude erInvalid_Handle, bude mit vychozi hodnotu
+		//prejmenovani stdin apod. byli klicova slova?
+		THandle std_in, std_out, std_err;	//kazdy, ktery bude erInvalid_Handle, bude mit vychozi hodnotu
 	};
 
 	/*

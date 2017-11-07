@@ -1,7 +1,7 @@
 
 #include "shell.h"
-#include <string>
 #include <iostream>
+#include <string>
 #include "rtl.h"
 
 size_t __stdcall shell(const kiv_os::TRegisters &regs) {
@@ -10,10 +10,9 @@ size_t __stdcall shell(const kiv_os::TRegisters &regs) {
 	
 	kiv_os::THandle std_in = 0;
 
-	std::string output = "Boot successful\n";
-	char * output_ = (char *)output.c_str();
+	char* output = "Boot successful\n";
 	size_t written;
-	kiv_os_rtl::Write_File(std_out, output_, std::strlen(output_), written);
+	kiv_os_rtl::Write_File(std_out, output, 16, written);
 
 	char * buf_command = new char[1001];
 	buf_command[1000] = '\0';

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "..\api\api.h"
+#include <Windows.h>
+
+extern HMODULE User_Programs;
 
 void Set_Error(const bool failed, kiv_os::TRegisters &regs);
 
