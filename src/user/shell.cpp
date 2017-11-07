@@ -9,8 +9,9 @@ size_t __stdcall shell(const kiv_os::TRegisters &regs) {
 	//kiv_os::THandle std_in = kiv_os_rtl::Create_File("CONIN$", 1);
 	
 	kiv_os::THandle std_in = 0;
-
+	
 	char* output = "Boot successful\n";
+	
 	size_t written;
 	kiv_os_rtl::Write_File(std_out, output, 16, written);
 

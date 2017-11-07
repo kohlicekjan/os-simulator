@@ -47,15 +47,14 @@ void __stdcall Run_VM() {
 	if (shell) {
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
+		//struktura pro inicializaci argumentu procesu
 		kiv_os::TProcess_Startup_Info init;
-		init.std_in = kiv_os::stdInput;
-		init.std_out = kiv_os::stdOutput;
-		init.std_err = kiv_os::stdError;
 		int pid = 0;
+		//vytvoreni init procesu s PID = 0
 		if (createProcess("shell", &pid, &init) == S_OK) {
 			shell(regs);
 		}
-			
+		
 	}
 
 	Shutdown_Kernel();
