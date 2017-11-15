@@ -2,6 +2,7 @@
 #include "kernel.h"
 #include "handles.h"
 #include "stdio.h"
+#include "FileSystem.h"
 
 void HandleIO(kiv_os::TRegisters &regs) {
 
@@ -9,11 +10,7 @@ void HandleIO(kiv_os::TRegisters &regs) {
 
 	switch (regs.rax.l) {
 			case kiv_os::scCreate_File: {
-				HANDLE result = CreateFileA((char*)regs.rdx.r, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.rcx.r, 0, OPEN_EXISTING, 0, 0);
-				//zde je treba podle Rxc doresit shared_read, shared_write, OPEN_EXISING, etc. podle potreby
-				regs.flags.carry = result == INVALID_HANDLE_VALUE;
-				if (!regs.flags.carry) regs.rax.x = Convert_Native_Handle(result);
-					else regs.rax.r = GetLastError();
+				Create_File(regs);
 			}
 			break;	//scCreateFile
 
@@ -48,5 +45,20 @@ void HandleIO(kiv_os::TRegisters &regs) {
 			}
 
 			break;	//CloseFile
+	}
+}
+
+void Create_File(kiv_os::TRegisters &regs) {
+	HANDLE result = CreateFileA((char*)regs.rdx.r, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.rcx.r, 0, OPEN_EXISTING, 0, 0);
+	//zde je treba podle Rxc doresit shared_read, shared_write, OPEN_EXISING, etc. podle potreby
+	std::string name = reinterpret_cast<char *>(regs.rdx.r);
+	HRESULT create_file = createChild(getRoot()->filePath, name, false);
+	regs.flags.carry = result == INVALID_HANDLE_VALUE;
+
+	if (!regs.flags.carry && create_file == S_OK) { 
+		regs.rax.x = Convert_Native_Handle(result); 
+	}
+	else {
+		regs.rax.r = GetLastError();
 	}
 }

@@ -49,9 +49,9 @@ void __stdcall Run_VM() {
 		kiv_os::TRegisters regs{ 0 };
 		//struktura pro inicializaci argumentu procesu
 		kiv_os::TProcess_Startup_Info init;
-		int pid = 0;
+		int pid = -1;
 		//vytvoreni init procesu s PID = 0
-		if (createProcess("shell", &pid, &init) == S_OK) {
+		if (createProcess("shell", &init) == S_OK) {
 			shell(regs);
 		}
 		

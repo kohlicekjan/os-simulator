@@ -3,7 +3,7 @@
 #include "..\api\api.h"
 #include "ps.h"
 
-extern "C" size_t __stdcall shell(const kiv_os::TRegisters &regs);
+extern "C" size_t __stdcall shell(kiv_os::TRegisters &regs);
 
 
 //nasledujici funkce si dejte do vlastnich souboru

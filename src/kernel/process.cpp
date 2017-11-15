@@ -1,6 +1,7 @@
 #include "../api/api.h"
 #include "process.h"
 #include "kernel.h"
+#include "FileSystem.h"
 
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
 PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256
@@ -8,21 +9,26 @@ PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256
 void HandleProcess(kiv_os::TRegisters &regs) {
 	switch (regs.rax.l){
 		case kiv_os::scClone: {
-			int pid = -1;		//pouzit registr rcx pro ulozeni pid rodice? nebo se obejdeme bez toho?
-			regs.rax.r = (decltype(regs.rax.r))createProcess(reinterpret_cast<char *>(regs.rdx.r), &pid, reinterpret_cast<kiv_os::TProcess_Startup_Info*>(regs.rdi.r));
+			
+			regs.rax.r = (decltype(regs.rax.r))createProcess(reinterpret_cast<char *>(regs.rdx.r), reinterpret_cast<kiv_os::TProcess_Startup_Info*>(regs.rdi.r));
 			break;
 		}
-		case kiv_os::scWait_For:{
+		case kiv_os::scWait_For: {
 			
+			break;
+		}
+		case kiv_os::scReturnPCB: {
+			Get_PCB(regs);
 			break;
 		}
 	}
 }
 
-HRESULT createProcess(char *name, int *parent_pid, kiv_os::TProcess_Startup_Info *arg) {
+HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	int pid = -1;
+	int parent_pid = -1;
 	std::vector<kiv_os::THandle> descriptors;
-
+	
 	//descriptory
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_in));
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_out));
@@ -45,17 +51,34 @@ HRESULT createProcess(char *name, int *parent_pid, kiv_os::TProcess_Startup_Info
 	if (pid == -1) {
 		return S_FALSE;
 	}
+
+	for (int i = 0; i < PCB_SIZE; i++) {
+		if(process_table[i] != NULL){
+			if (process_table[i]->thread.get_id() == std::this_thread::get_id()) {
+				parent_pid = i;
+				break;
+			}
+		}
+	}
+
 	
 	process_table[pid]->name = name;
-	process_table[pid]->par_pid = *parent_pid;	//tohle je zatim fake, viz HandleProc
+	process_table[pid]->par_pid = parent_pid;	
+	
+	if(parent_pid > 0 && process_table[pid] != NULL){
+		process_table[pid]->path = process_table[parent_pid]->path;
+	}
+	else {
+		//process_table[pid]->path = getRoot().filePath; - pridat root filesystemu
+	}
 
 	for(auto &descriptor : descriptors){
 		process_table[pid]->descriptors.push_back(descriptor);
 	}
-		
+	
 	//najde vstupni pod noveho procesu
 	kiv_os::TEntry_Point func = (kiv_os::TEntry_Point)GetProcAddress(User_Programs, name);
-
+	
 	//vstupni bod se nepovedlo nalezt 
 	if (!func) {
 		std::lock_guard<std::mutex> lock(pcb_mutex);
@@ -75,13 +98,29 @@ HRESULT createProcess(char *name, int *parent_pid, kiv_os::TProcess_Startup_Info
 
 
 void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConsole) {
+	
 	kiv_os::TRegisters regs;
 	//ulozeni hodnot do registru
 	regs.rdx.r = (decltype(regs.rdx.r))process_table[pid]->name;
 	regs.rcx.r = (decltype(regs.rcx.r))arg;
 	regs.rax.r = (decltype(regs.rax.r))&process_table[pid]->descriptors;
-
+	
 	//spusteni procesu
 	size_t ret = func(regs);
+	
+}
+
+HRESULT joinProcess(int pid) {
+	std::thread::id tid = process_table[pid]->thread.get_id();
+	//ukonceni procesu
+	process_table[pid]->thread.join();
+	//smazani zaznamu o procesu
+	delete process_table[pid];
+	process_table[pid] = nullptr;
+	return S_OK;
+}
+
+void Get_PCB(kiv_os::TRegisters regs) {
+	regs.rdx.r = (decltype(regs.rdx.r))&process_table;
 	
 }

@@ -63,3 +63,20 @@ bool kiv_os_rtl::Close_File(const kiv_os::THandle file_handle) {
 	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_handle);
 	return Do_SysCall(regs);
 }
+
+bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
+	char* name = reinterpret_cast<char *>(regs.rdx.r);
+	uint64_t process_info = regs.rdi.r;
+	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scClone);
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(name);
+	regs.rdi.r = process_info;
+	
+	return Do_SysCall(regs);
+}
+
+bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters regs) {
+	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scReturnPCB);
+	bool result = Do_SysCall(regs);
+	
+	return result;
+}

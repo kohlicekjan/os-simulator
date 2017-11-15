@@ -4,11 +4,13 @@
 #include <string>
 #include "rtl.h"
 
-size_t __stdcall shell(const kiv_os::TRegisters &regs) {
+size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = kiv_os_rtl::Create_File("CONOUT$", /*FILE_SHARE_WRITE*/2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 	//kiv_os::THandle std_in = kiv_os_rtl::Create_File("CONIN$", 1);
 	
 	kiv_os::THandle std_in = 0;
+
+	kiv_os::TProcess_Startup_Info process_info;
 	
 	char* output = "Boot successful\n";
 	
@@ -27,8 +29,18 @@ size_t __stdcall shell(const kiv_os::TRegisters &regs) {
 
 		kiv_os_rtl::Write_File(std_out, cur_path_, std::strlen(cur_path_), written);
 		char *input_ = (char *)input.c_str();
-		if (std::strcmp(input_, "ps") == 0) {
-			ps(regs);
+		if (std::strcmp(input_, "ps") == 0) {	
+			regs.rdx.r = (decltype(regs.rdx.r))input_;
+			process_info.arg = "ps";
+			process_info.std_in = std_in;
+			process_info.std_out = std_out;
+			process_info.std_err = 2;
+			regs.rdi.r = (decltype(regs.rdi.r))&process_info;
+			kiv_os_rtl::Create_Process(regs);
+		}
+
+		if (std::strcmp(input_, "shutdown") == 0) {
+			break;
 		}
 		
 		/*
