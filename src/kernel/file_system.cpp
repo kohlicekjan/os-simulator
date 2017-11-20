@@ -2,7 +2,7 @@
 // Created by BobrZlosyn on 09.11.2017.
 //
 
-#include "FileSystem.h"
+#include "file_system.h"
 
 #include <iterator>
 #include <regex>
@@ -43,7 +43,7 @@ FSystem *getActualNode() {
 /// <param name='name'>node name</param>
 /// <param name='isDirectory'>true if node is directory</param>
 /// </summary>  
-HRESULT createChild(std::string path, std::string name, bool isDirectory) {
+FSystem *createChild(std::string path, std::string name, bool isDirectory) {
 
 	FSystem *child = new FSystem;
 	child->children = {};
@@ -55,16 +55,16 @@ HRESULT createChild(std::string path, std::string name, bool isDirectory) {
 
 	child->parent = findChild(path);
 	if (child->parent == nullptr) {
-		return E_ACCESSDENIED;
+		return nullptr;
 	}
 
 	if (childExist(child->parent, name)) {
-		return E_INVALIDARG;
+		return nullptr;
 	}
 
 	child->parent->children.push_back(child);
 
-	return S_OK;
+	return child;
 }
 
 
@@ -135,7 +135,7 @@ void getData(FSystem *file, size_t startPosition, size_t size, char** buffer, si
 /// <param name='dir'>node to delete</param>
 /// </summary> 
 void setData(FSystem *file, char* buffer, size_t write) {
-	if (file->isDirectory) {
+/*	if (file->isDirectory) {
 		return;
 	}
 	//TODO: need to be tested 
@@ -145,7 +145,7 @@ void setData(FSystem *file, char* buffer, size_t write) {
 		tw += buffer[w];
 	}
 
-	file->content.append(tw);
+	file->content.append(tw);-*/
 }
 
 

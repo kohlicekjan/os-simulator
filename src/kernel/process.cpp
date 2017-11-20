@@ -1,7 +1,7 @@
 #include "../api/api.h"
 #include "process.h"
 #include "kernel.h"
-#include "FileSystem.h"
+#include "file_system.h"
 
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
 PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256

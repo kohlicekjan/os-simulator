@@ -20,7 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\kernel\dllmain.cpp" />
-    <ClCompile Include="..\..\src\kernel\fileSystem.cpp" />
+    <ClCompile Include="..\..\src\kernel\file_descriptor.cpp" />
+    <ClCompile Include="..\..\src\kernel\file_system.cpp" />
     <ClCompile Include="..\..\src\kernel\handles.cpp" />
     <ClCompile Include="..\..\src\kernel\io.cpp" />
     <ClCompile Include="..\..\src\kernel\kernel.cpp" />
@@ -29,7 +30,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\api\api.h" />
     <ClInclude Include="..\..\src\api\api_extension.h" />
-    <ClInclude Include="..\..\src\kernel\FileSystem.h" />
+    <ClInclude Include="..\..\src\kernel\file_descriptor.h" />
+    <ClInclude Include="..\..\src\kernel\file_system.h" />
     <ClInclude Include="..\..\src\kernel\handles.h" />
     <ClInclude Include="..\..\src\kernel\io.h" />
     <ClInclude Include="..\..\src\kernel\kernel.h" />

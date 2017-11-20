@@ -2,7 +2,7 @@
 #include "kernel.h"
 #include "handles.h"
 #include "stdio.h"
-#include "FileSystem.h"
+#include "file_system.h"
 
 void HandleIO(kiv_os::TRegisters &regs) {
 
@@ -52,7 +52,9 @@ void Create_File(kiv_os::TRegisters &regs) {
 	HANDLE result = CreateFileA((char*)regs.rdx.r, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.rcx.r, 0, OPEN_EXISTING, 0, 0);
 	//zde je treba podle Rxc doresit shared_read, shared_write, OPEN_EXISING, etc. podle potreby
 	std::string name = reinterpret_cast<char *>(regs.rdx.r);
-	HRESULT create_file = createChild(getRoot()->filePath, name, false);
+	// TO DO: pøedìlat na file descriptor
+	//HRESULT create_file = createChild(getRoot()->filePath, name, false);
+	HRESULT create_file = S_OK;
 	regs.flags.carry = result == INVALID_HANDLE_VALUE;
 
 	if (!regs.flags.carry && create_file == S_OK) { 

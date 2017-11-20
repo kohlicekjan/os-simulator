@@ -25,7 +25,7 @@ void printFileSystem();
 void printFiles(FSystem *dir, int depth);
 void printVisualDepth(int depth, FSystem *file);
 std::vector<std::string> split_string(std::string str);
-HRESULT createChild(std::string path, std::string name, bool isDirectory);
+FSystem *createChild(std::string path, std::string name, bool isDirectory);
 FSystem *getActualNode();
 FSystem *findChild(std::string path);
 int deleteChild(std::string path);
