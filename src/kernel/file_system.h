@@ -28,7 +28,7 @@ std::vector<std::string> split_string(std::string str);
 FSystem *createChild(std::string path, std::string name, bool isDirectory);
 FSystem *getActualNode();
 FSystem *findChild(std::string path);
-int deleteChild(std::string path);
+int deleteChild(FSystem *node);
 void deleteSubdirs(FSystem *dir);
 bool childExist(FSystem *parent, std::string newChild);
 void setActualNode(FSystem *node);

@@ -72,7 +72,7 @@ HRESULT close_file(f_des *des) {
 }
 
 HRESULT remove_file(f_des *des) {
-	deleteChild(des->path);
+	deleteChild(des->file); //TODO: otestovat zda se zaznam aktualizuje
 	delete (des);
 	return S_OK;
 }

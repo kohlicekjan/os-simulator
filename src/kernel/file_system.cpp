@@ -87,8 +87,7 @@ bool childExist(FSystem *parent, std::string newChild) {
 /// <summary> delete node on given path
 /// <param name='path'> path to node, last element in path will be deleted</param>
 /// </summary>  
-int deleteChild(std::string path) {
-	FSystem *node = findChild(path);
+int deleteChild(FSystem *node) {
 	std::vector<FSystem *>::iterator childIt;
 
 	if (node == nullptr || node->parent == nullptr) {
