@@ -1,10 +1,9 @@
 #include "file_descriptor.h"
 #include "file_system.h"
 
-f_des *open_file(std::string path, bool isDir) {
+f_des *open_file(std::string path, bool isDir ) {
 	f_des *descriptor = new f_des;
 	descriptor->act_pos = 0;
-	descriptor->path = path;
 	FSystem *file = findChild(path);
 	std::string name = split_string(path).back();
 
@@ -15,6 +14,32 @@ f_des *open_file(std::string path, bool isDir) {
 	descriptor->file = file;
 	return descriptor;
 }
+
+int act_pos(f_des *des) {
+	if (des != nullptr) {
+		return des->act_pos;
+	}
+	
+	return -1;
+}
+
+void set_act_pos(f_des *des, int pos) {
+	if (des != nullptr && des->file->content.length() > pos) {
+		des->act_pos = pos;
+	}
+}
+
+
+bool isEOF(f_des *des) {
+	int pos;
+	if (des != nullptr) {
+		pos = des->act_pos;
+		return (des->file->content.at(pos) == EOF);
+	}
+
+	return false;
+}
+
 
 char read_file(f_des *des) {
 
@@ -45,12 +70,15 @@ char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read) {
 	return buffer;
 }
 
+//zapisuje na konec souboru
 HRESULT write_file(f_des *des, char *to_write, char size_to_write) {
+	std::string pom;
 	if (des->file->isDirectory) {
 		return E_INVALIDARG;
 	}
-
+	des->file->content.pop_back();
 	des->file->content.append(to_write);
+	des->file->content.push_back(EOF);
 	return S_OK;
 }
 

@@ -3,7 +3,8 @@
 void input_parser(char *input, int input_size) {
 
 	char args[256][1025];
-	parse_args(args, input, input_size);
+	int argc;
+	parse_args(args, &argc, input, input_size);
 	if (input_cmp(input, input_size, "ps", 2)) {
 		
 	}
@@ -14,8 +15,23 @@ void input_parser(char *input, int input_size) {
 }
 
 
+//return length of string - max index - predchazeni nekonecne smycky 
+int str_len(char *input, int max_index) {
+	int i = 0;
+
+	while (input[i] != '\0') {
+		i++;
+
+		if (i == max_index) {
+			return i;
+		}
+	}
+
+	return i;
+}
+
 // teoreticky parsuje øádek a dává to do pole - zatim omezena delka
-void parse_args (char args[][1025], char *input, int size) {
+void parse_args (char args[][1025], int *argc, char *input, int size) {
 	int i, 
 		arg_num = 0,
 		act_index = 0;
@@ -42,6 +58,8 @@ void parse_args (char args[][1025], char *input, int size) {
 			}
 		}
 	}
+
+	argc = &arg_num;
 }
 
 //precise - je pokud chceš pøesnou delku - default value false

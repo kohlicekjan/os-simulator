@@ -27,7 +27,7 @@
     <ClCompile Include="..\..\src\user\ps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="parser.cpp">
+    <ClCompile Include="..\..\src\user\parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClInclude Include="..\..\src\user\ps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="parser.h">
+    <ClInclude Include="..\..\src\user\parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

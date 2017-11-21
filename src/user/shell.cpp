@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "rtl.h"
+#include "parser.h"
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = kiv_os_rtl::Create_File("CONOUT$", /*FILE_SHARE_WRITE*/2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
@@ -30,6 +31,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 		kiv_os_rtl::Write_File(std_out, cur_path_, std::strlen(cur_path_), written);
 		char *input_ = (char *)input.c_str();
+		int input_size = input.length();
 		if (std::strcmp(input_, "ps") == 0) {	
 			regs.rdx.r = (decltype(regs.rdx.r))input_;
 			process_info.arg = "ps";
@@ -40,7 +42,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			kiv_os_rtl::Create_Process(regs);
 		}
 
-		if (std::strcmp(input_, "shutdown") == 0) {
+		if (input_cmp(input_, input_size, "shutdown", 8)) {
 			break;
 		}
 		

@@ -47,7 +47,7 @@ FSystem *createChild(std::string path, std::string name, bool isDirectory) {
 
 	FSystem *child = new FSystem;
 	child->children = {};
-	child->content = "";
+	child->content = EOF;
 	child->filename = name;
 	child->filePath = path;
 	child->isDirectory = isDirectory;
