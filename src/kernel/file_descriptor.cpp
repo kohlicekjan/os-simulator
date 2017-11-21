@@ -87,10 +87,13 @@ HRESULT write_file(f_des *des, char *buffer, int start_pos, int size_to_write) {
 		return E_INVALIDARG;
 	}
 
+	des->file->content.pop_back(); //Odstranìní EOF
 	std::string pom = des->file->content.substr(0, start_pos);
 	pom.append(buffer);
 	pom.append(des->file->content.substr(start_pos, des->file->content.length()));
 	des->file->content = pom;
+	des->file->content.push_back(EOF);
+
 	return S_OK;
 }
 
