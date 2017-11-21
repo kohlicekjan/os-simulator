@@ -6,13 +6,16 @@
 
 #include <iterator>
 #include <regex>
+#include <mutex>
 
-FSystem *root = createRoot(); // root node
-FSystem *actualNode = getRoot(); //node of actual directory
+//zamek pro operace, ktere meni strukturu stromu
+std::mutex fs_lock;
+FSystem *root = create_root(); // root node
+FSystem *actualNode = get_root(); //node of actual directory
 
 /// <summary> Creating new root  
 /// </summary>  
-FSystem *createRoot() {
+FSystem *create_root() {
 	FSystem *root = new FSystem;
 
 	root->children = {};
@@ -25,15 +28,15 @@ FSystem *createRoot() {
 	return root;
 }
 
-FSystem *getRoot() {
+FSystem *get_root() {
 	return root;
 }
 
-void setActualNode(FSystem *node) {
+void set_actual_node(FSystem *node) {
 	actualNode = node;
 }
 
-FSystem *getActualNode() {
+FSystem *actual_node() {
 	return actualNode;
 }
 
@@ -43,7 +46,8 @@ FSystem *getActualNode() {
 /// <param name='name'>node name</param>
 /// <param name='isDirectory'>true if node is directory</param>
 /// </summary>  
-FSystem *createChild(std::string path, std::string name, bool isDirectory) {
+FSystem *create_child(std::string path, std::string name, bool isDirectory) {
+	std::lock_guard<std::mutex> lock(fs_lock);
 
 	FSystem *child = new FSystem;
 	child->children = {};
@@ -53,12 +57,12 @@ FSystem *createChild(std::string path, std::string name, bool isDirectory) {
 	child->isDirectory = isDirectory;
 	child->owner = "";
 
-	child->parent = findChild(path);
+	child->parent = find_child(path);
 	if (child->parent == nullptr) {
 		return nullptr;
 	}
 
-	if (childExist(child->parent, name)) {
+	if (child_exist(child->parent, name)) {
 		return nullptr;
 	}
 
@@ -72,7 +76,7 @@ FSystem *createChild(std::string path, std::string name, bool isDirectory) {
 /// <param name='parent'>dir node which will be searched</param>
 /// <param name='newChild'>name of new node</param>
 /// </summary>  
-bool childExist(FSystem *parent, std::string newChild) {
+bool child_exist(FSystem *parent, std::string newChild) {
 	std::vector<FSystem *>::iterator childIt;
 	for (childIt = parent->children.begin(); childIt != parent->children.end(); childIt++) {
 		if ((*childIt)->filename.compare(newChild) == 0) {
@@ -87,7 +91,8 @@ bool childExist(FSystem *parent, std::string newChild) {
 /// <summary> delete node on given path
 /// <param name='path'> path to node, last element in path will be deleted</param>
 /// </summary>  
-int deleteChild(FSystem *node) {
+int delete_child(FSystem *node) {
+	std::lock_guard<std::mutex> lock(fs_lock);
 	std::vector<FSystem *>::iterator childIt;
 
 	if (node == nullptr || node->parent == nullptr) {
@@ -101,18 +106,18 @@ int deleteChild(FSystem *node) {
 		}
 	}
 
-	deleteSubdirs(node);
+	delete_subdirs(node);
 	return 2;
 }
 
 /// <summary> function for deleting subdirs - is called from function deleteChild
 /// <param name='dir'>node to delete</param>
 /// </summary>  
-void deleteSubdirs(FSystem *dir) {
+void delete_subdirs(FSystem *dir) {
 	std::vector<FSystem *>::iterator childIt;
 	for (childIt = dir->children.begin(); childIt != dir->children.end(); childIt++) {
 		if ((*childIt)->isDirectory) {
-			deleteSubdirs((*childIt));
+			delete_subdirs((*childIt));
 		}
 		else {
 			delete((*childIt));
@@ -126,14 +131,14 @@ void deleteSubdirs(FSystem *dir) {
 /// <summary> function for deleting subdirs - is called from function deleteChild
 /// <param name='dir'>node to delete</param>
 /// </summary> 
-void getData(FSystem *file, size_t startPosition, size_t size, char** buffer, size_t *filled) {
+void get_data(FSystem *file, size_t startPosition, size_t size, char** buffer, size_t *filled) {
 	// TODO: need to be filled
 }
 
 /// <summary> function for deleting subdirs - is called from function deleteChild
 /// <param name='dir'>node to delete</param>
 /// </summary> 
-void setData(FSystem *file, char* buffer, size_t write) {
+void set_data(FSystem *file, char* buffer, size_t write) {
 /*	if (file->isDirectory) {
 		return;
 	}
@@ -151,11 +156,14 @@ void setData(FSystem *file, char* buffer, size_t write) {
 /// <summary> searching for node in the path
 /// <param name='path'>path to the node - last element will be returned</param>
 /// </summary> 
-FSystem *findChild(std::string path) {
+FSystem *find_child(std::string path) {
+
+	std::lock_guard<std::mutex> lock(fs_lock);
+
 	std::vector<std::string> pathParts;
 	std::vector<std::string>::iterator it;
 	std::vector<FSystem *>::iterator childIt;
-	FSystem *startNode = getActualNode();
+	FSystem *startNode = actual_node();
 	bool error = true;
 
 	if (path.size() >= 2 && path.substr(0, 2).compare("./") == 0) {
@@ -163,7 +171,7 @@ FSystem *findChild(std::string path) {
 	}
 	else if (path.size() >= 4 && path.substr(0, 4).compare("C://") == 0) {
 		path = path.substr(4, path.size()); // setting absolute path
-		startNode = getRoot();
+		startNode = get_root();
 	}
 
 	pathParts = split_string(path);
@@ -226,18 +234,18 @@ std::vector<std::string> split_string(std::string str) {
 
 /// <summary> printing whole file system 
 /// </summary> 
-void printFileSystem() {
-	FSystem *node = getRoot();
+void print_file_system() {
+	FSystem *node = get_root();
 
 	printf("\\ \n");
-	printFiles(node, 1);
+	print_files(node, 1);
 }
 
 /// <summary> printing structure with recurse call
 /// <param name='dir'>dir where to start printing</param>
 /// <param name='depth'>depth of the dir</param>
 /// </summary> 
-void printFiles(FSystem *dir, int depth) {
+void print_files(FSystem *dir, int depth) {
 	FSystem *pomNode;
 	std::vector<FSystem*>::iterator it;
 	std::vector<FSystem*> dirs;
@@ -251,13 +259,13 @@ void printFiles(FSystem *dir, int depth) {
 			continue;
 		}
 
-		printVisualDepth(depth, pomNode);
+		print_visual_depth(depth, pomNode);
 	}
 
 
 	for (it = dirs.begin(); it != dirs.end(); it++) {
-		printVisualDepth(depth, *it);
-		printFiles(*it, depth + 1);
+		print_visual_depth(depth, *it);
+		print_files(*it, depth + 1);
 	}
 }
 
@@ -265,7 +273,7 @@ void printFiles(FSystem *dir, int depth) {
 /// <param name='depth'>depth of the node</param>
 /// <param name='file'>file to be printed</param>
 /// </summary> 
-void printVisualDepth(int depth, FSystem *file) {
+void print_visual_depth(int depth, FSystem *file) {
 	int i;
 	for (i = 0; i < depth; i++) {
 		printf("\t");

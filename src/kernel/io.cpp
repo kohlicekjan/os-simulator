@@ -4,6 +4,8 @@
 #include "stdio.h"
 #include "file_system.h"
 
+
+
 void HandleIO(kiv_os::TRegisters &regs) {
 
 	//V ostre verzi pochopitelne do switche dejte volani funkci a ne primo vykonny kod
@@ -64,3 +66,4 @@ void Create_File(kiv_os::TRegisters &regs) {
 		regs.rax.r = GetLastError();
 	}
 }
+

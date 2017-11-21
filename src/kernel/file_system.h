@@ -19,16 +19,16 @@ typedef struct file_system {
 	std::string filePath;
 }FSystem;
 
-FSystem *createRoot();
-FSystem *getRoot();
-void printFileSystem();
-void printFiles(FSystem *dir, int depth);
-void printVisualDepth(int depth, FSystem *file);
+FSystem *create_root();
+FSystem *get_root();
+void print_file_system();
+void print_files(FSystem *dir, int depth);
+void print_visual_depth(int depth, FSystem *file);
 std::vector<std::string> split_string(std::string str);
-FSystem *createChild(std::string path, std::string name, bool isDirectory);
-FSystem *getActualNode();
-FSystem *findChild(std::string path);
-int deleteChild(FSystem *node);
-void deleteSubdirs(FSystem *dir);
-bool childExist(FSystem *parent, std::string newChild);
-void setActualNode(FSystem *node);
+FSystem *create_child(std::string path, std::string name, bool isDirectory);
+FSystem *actual_node();
+FSystem *find_child(std::string path);
+int delete_child(FSystem *node);
+void delete_subdirs(FSystem *dir);
+bool child_exist(FSystem *parent, std::string newChild);
+void set_actual_node(FSystem *node);
