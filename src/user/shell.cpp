@@ -24,6 +24,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	while (std::getline(std::cin, input)) {
 		
+
 		std::string cur_path = "\nC:\>";
 		char * cur_path_ = (char *)cur_path.c_str();
 
@@ -55,4 +56,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	kiv_os_rtl::Close_File(std_out);
 	return 0;
+}
+
+void parser(char *buffer) {
 }
