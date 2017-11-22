@@ -76,7 +76,7 @@ void Write_File(kiv_os::TRegisters &regs) {
 //	if (!regs.flags.carry) regs.flags.carry = !WriteFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &written, NULL);
 	if (!regs.flags.carry) {
 		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));
-		
+		fwrite(reinterpret_cast<char*>(regs.rdi.r), sizeof(char), regs.rcx.r, stdout); //tohle bude potreba prepsat!!!!
 	}
 	if (!regs.flags.carry) regs.rax.r = static_cast<char>(regs.rcx.r);
 	else regs.rax.r = GetLastError();
@@ -91,5 +91,7 @@ void Read_File(kiv_os::TRegisters &regs) {
 	if (!regs.flags.carry) regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), 0, regs.rcx.r);
 	/*if (!regs.flags.carry) regs.rax.r = read;
 	else regs.rax.r = GetLastError();*/
+
+	fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
 	
 }
