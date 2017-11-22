@@ -1,56 +1,63 @@
+#pragma once
+
 #include "file_descriptor.h"
 #include "file_system.h"
 #include <mutex>
 
-f_des *open_file(std::string path, bool isDir, const char *mode) {
+f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 
 	f_des *descriptor = new f_des;
 	descriptor->open_type = mode;
 	descriptor->act_pos = 0;
 	descriptor->writing = true;
 	descriptor->reading = true;
-
-	FSystem *file = find_child(path);
+	
 	std::string name = split_string(path).back();
+	FSystem *file = find_child(path);
 
-
-	if (strcmp(WRITE, mode) == 0) {
+	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
 			file->content = EOF;
 		}
+		else {
+			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
+		}
 
-	} else if(strcmp(READ, mode) == 0) {
+	} else if(READ == mode) {
 		descriptor->writing = false;
 		if (file != nullptr) {
-			return nullptr;
+			return  (f_des *)INVALID_HANDLE_VALUE;
 		}
 
-	} else if (strcmp(WRITE_UPDATE, mode) == 0) {
+	} else if (WRITE_UPDATE == mode) {
 		if (file != nullptr) {
 			file->content = EOF;
 		}
-
-	} else if (strcmp(READ_UPDATE, mode) == 0) {
-		if (file == nullptr) {
-			return nullptr;
+		else {
+			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
 		}
 
-	} else if (strcmp(APPEND, mode) == 0) {
+	} else if (READ_UPDATE == mode) {
+		if (file == nullptr) {
+			return (f_des *) INVALID_HANDLE_VALUE;
+		}
+
+	} else if (APPEND == mode) {
 		descriptor->reading = false;
-		if (file != nullptr) {
-			file = create_child(path, name, isDir);
+		if (file == nullptr) {
+			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
 		}
 		descriptor->act_pos = file->content.length() - 1;
 
-	} else if (strcmp(APPEND_UPDATE, mode) == 0) {
-		if (file != nullptr) {
-			file = create_child(path, name, isDir);
+	} else if (APPEND_UPDATE == mode) {
+		if (file == nullptr) {
+			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
 		}
 		descriptor->act_pos = file->content.length() - 1;
 
 	} else {
-		return nullptr;
+		return  (f_des *)INVALID_HANDLE_VALUE;
 	}
 
 	descriptor->filename = name;

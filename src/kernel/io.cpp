@@ -1,9 +1,11 @@
+#pragma once
+
 #include "io.h"
 #include "kernel.h"
 #include "handles.h"
 #include "stdio.h"
+#include "file_descriptor.h"
 #include "file_system.h"
-
 
 
 void HandleIO(kiv_os::TRegisters &regs) {
@@ -41,7 +43,8 @@ void HandleIO(kiv_os::TRegisters &regs) {
 
 		case kiv_os::scClose_Handle: {
 				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
-				regs.flags.carry = !CloseHandle(hnd);
+
+				regs.flags.carry = !close_file((f_des *)hnd) == S_OK;
 				if (!regs.flags.carry) Remove_Handle(regs.rdx.x);				
 					else regs.rax.r = GetLastError();
 			}
@@ -51,15 +54,24 @@ void HandleIO(kiv_os::TRegisters &regs) {
 }
 
 void Create_File(kiv_os::TRegisters &regs) {
-	HANDLE result = CreateFileA((char*)regs.rdx.r, GENERIC_READ | GENERIC_WRITE, (DWORD)regs.rcx.r, 0, OPEN_EXISTING, 0, 0);
-	//zde je treba podle Rxc doresit shared_read, shared_write, OPEN_EXISING, etc. podle potreby
-	std::string name = reinterpret_cast<char *>(regs.rdx.r);
+	
+	
+	HANDLE result;
+	if (regs.rcx.l != 0) {
+		result = open_file((char*)regs.rdx.r, true);
+	}
+	else {
+		result = open_file((char*)regs.rdx.r, false, regs.rcx.h);
+	}
+
+	print_file_system();
+
 	// TO DO: pøedìlat na file descriptor
 	//HRESULT create_file = createChild(getRoot()->filePath, name, false);
-	HRESULT create_file = S_OK;
+
 	regs.flags.carry = result == INVALID_HANDLE_VALUE;
 
-	if (!regs.flags.carry && create_file == S_OK) { 
+	if (!regs.flags.carry) {
 		regs.rax.x = Convert_Native_Handle(result); 
 	}
 	else {

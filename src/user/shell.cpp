@@ -6,10 +6,10 @@
 #include "parser.h"
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
-	kiv_os::THandle std_out = kiv_os_rtl::Create_File("CONOUT$", /*FILE_SHARE_WRITE*/2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	//kiv_os::THandle std_in = kiv_os_rtl::Create_File("CONIN$", 1);
-	
-	kiv_os::THandle std_in = 0;
+	kiv_os::THandle std_out = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_in = kiv_os_rtl::Create_File("C://system/term/CONIN$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_err = kiv_os_rtl::Create_File("C://system/term/CONERR$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+
 
 	kiv_os::TProcess_Startup_Info process_info;
 	
@@ -26,7 +26,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	while (std::getline(std::cin, input)) {
 		
 
-		std::string cur_path = "\nC:\>";
+		std::string cur_path = "\nC:\\>";
 		char * cur_path_ = (char *)cur_path.c_str();
 
 		kiv_os_rtl::Write_File(std_out, cur_path_, std::strlen(cur_path_), written);

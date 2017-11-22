@@ -57,7 +57,7 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 	child->isDirectory = isDirectory;
 	child->owner = "";
 
-	child->parent = find_child(path);
+	child->parent = find_child(path, true);
 	if (child->parent == nullptr) {
 		return nullptr;
 	}
@@ -80,7 +80,6 @@ bool child_exist(FSystem *parent, std::string newChild) {
 	std::vector<FSystem *>::iterator childIt;
 	for (childIt = parent->children.begin(); childIt != parent->children.end(); childIt++) {
 		if ((*childIt)->filename.compare(newChild) == 0) {
-			parent->parent->children.erase(childIt);
 			return true;
 		}
 	}
@@ -156,9 +155,12 @@ void set_data(FSystem *file, char* buffer, size_t write) {
 /// <summary> searching for node in the path
 /// <param name='path'>path to the node - last element will be returned</param>
 /// </summary> 
-FSystem *find_child(std::string path) {
+FSystem *find_child(std::string path, bool hasLock) {
 
-	std::lock_guard<std::mutex> lock(fs_lock);
+	if (!hasLock) {
+		std::lock_guard<std::mutex> lock(fs_lock);
+	}
+	
 
 	std::vector<std::string> pathParts;
 	std::vector<std::string>::iterator it;

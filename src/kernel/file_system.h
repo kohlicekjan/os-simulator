@@ -27,7 +27,7 @@ void print_visual_depth(int depth, FSystem *file);
 std::vector<std::string> split_string(std::string str);
 FSystem *create_child(std::string path, std::string name, bool isDirectory);
 FSystem *actual_node();
-FSystem *find_child(std::string path);
+FSystem *find_child(std::string path, bool hasLock = false);
 int delete_child(FSystem *node);
 void delete_subdirs(FSystem *dir);
 bool child_exist(FSystem *parent, std::string newChild);

@@ -29,10 +29,13 @@ bool Do_SysCall(kiv_os::TRegisters &regs) {
 
 
 
-kiv_os::THandle kiv_os_rtl::Create_File(const char* file_name, size_t flags) {
+kiv_os::THandle kiv_os_rtl::Create_File(const char* file_name, size_t flags, size_t isDir) {
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_File);
 	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(file_name);
-	regs.rcx.r = flags;
+	
+	regs.rcx.h = flags;
+	regs.rcx.l = isDir;
+	
 	Do_SysCall(regs);
 	return static_cast<kiv_os::THandle>(regs.rax.x);
 }

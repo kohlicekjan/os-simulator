@@ -5,25 +5,25 @@
 #include <windows.h>
 #include "file_system.h"
 
-const char *WRITE = "w"; //just writing - create empty file  - cursor at beginning
-const char *READ = "r"; //just read - file must exist
-const char *APPEND = "a"; //writing - file we be created - cursor at end
-const char *WRITE_UPDATE = "w+"; //both - new file will be created
-const char *READ_UPDATE = "r+"; //both - file must exist
-const char *APPEND_UPDATE = "a+"; //both - file is created if dont exist 
+static int WRITE = 1; //just writing - create empty file  - cursor at beginning
+static int READ = 2; //just read - file must exist
+static int APPEND = 3; //writing - file we be created - cursor at end
+static int WRITE_UPDATE = 4; //both - new file will be created
+static int READ_UPDATE = 5; //both - file must exist
+static int APPEND_UPDATE = 6; //both - file is created if dont exist 
 
 typedef struct file_descriptor {
 	int act_pos;
 	std::string filename;
 	FSystem *file;
-	std::string open_type;
+	uint64_t open_type;
 	int open_clients;
 	bool reading;
 	bool writing;
 }f_des;
 
 
-f_des *open_file(std::string path, bool isDir = false, const char *mode = WRITE);
+f_des *open_file(std::string path, bool isDir = false, uint64_t mode = WRITE);
 
 int act_pos(f_des *des);
 void set_act_pos(f_des *des, int pos);

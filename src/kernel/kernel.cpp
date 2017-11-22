@@ -39,14 +39,45 @@ void __stdcall Sys_Call(kiv_os::TRegisters &regs) {
 
 }
 
+void creating_os_structure() {
+	kiv_os::TRegisters regs{ 0 };
+
+	regs.rax.h = kiv_os::scIO;
+	regs.rax.l = kiv_os::scCreate_File;
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>("C://system");
+	regs.rcx.h = 2;
+	regs.rcx.l = 1;
+
+	HandleIO(regs);
+	regs.rdx.x = regs.rax.x;
+	regs.rax.l = kiv_os::scClose_Handle;
+	HandleIO(regs);
+	
+	regs.rax.h = kiv_os::scIO;
+	regs.rax.l = kiv_os::scCreate_File;
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>("C://system/term");
+	regs.rcx.h = 2;
+	regs.rcx.l = 1;
+
+	HandleIO(regs);
+	regs.rdx.x = regs.rax.x;
+	regs.rax.l = kiv_os::scClose_Handle;
+	HandleIO(regs);
+}
+
 void __stdcall Run_VM() {
 	Initialize_Kernel();
 
 	//spustime shell - v realnem OS bychom ovsem spousteli login
 	kiv_os::TEntry_Point shell = (kiv_os::TEntry_Point)GetProcAddress(User_Programs, "shell");
+
 	if (shell) {
+
+		creating_os_structure();
+
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
+
 		//struktura pro inicializaci argumentu procesu
 		kiv_os::TProcess_Startup_Info init;
 		int pid = -1;
