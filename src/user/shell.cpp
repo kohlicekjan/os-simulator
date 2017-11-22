@@ -40,21 +40,46 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 		char *input = buf_command;
 	//	char *input = (char *)input_.c_str();
-	
-		if (input_cmp(input, str_len(input, 256), "ps", 8)) {
-			regs.rdx.r = (decltype(regs.rdx.r))input;
-			process_info.arg = "ps";
-			process_info.std_in = std_in;
-			process_info.std_out = std_out;
-			process_info.std_err = std_err;
-			regs.rdi.r = (decltype(regs.rdi.r))&process_info;
-			kiv_os_rtl::Create_Process(regs);
-		}
 
+		regs.rdx.r = (decltype(regs.rdx.r))input;
+		process_info.std_in = std_in;
+		process_info.std_out = std_out;
+		process_info.std_err = std_err;
+		regs.rdi.r = (decltype(regs.rdi.r))&process_info;
+
+		if (input_cmp(input, str_len(input, 256), "ps", 8)) {	
+			process_info.arg = "ps";
+		}
+		if (input_cmp(input, str_len(input, 256), "cd", 8)) {
+			process_info.arg = "cd";
+		}
+		if (input_cmp(input, str_len(input, 256), "dir", 8)) {
+			process_info.arg = "dir";
+		}
+		if (input_cmp(input, str_len(input, 256), "echo", 8)) {
+			process_info.arg = "echo";
+		}
+		if (input_cmp(input, str_len(input, 256), "md", 8)) {
+			process_info.arg = "md";
+		}
+		if (input_cmp(input, str_len(input, 256), "rd", 8)) {
+			process_info.arg = "rd";
+		}
+		if (input_cmp(input, str_len(input, 256), "type", 8)) {
+			process_info.arg = "type";
+		}
+		if (input_cmp(input, str_len(input, 256), "sort", 8)) {
+			process_info.arg = "sort";
+		}
+		if (input_cmp(input, str_len(input, 256), "wc", 8)) {
+			process_info.arg = "wc";
+		}
 		if (input_cmp(input, str_len(input, 256), "shutdown", 8)) {
+			process_info.arg = "shutdown";
 			break;
 		}
-		
+
+		kiv_os_rtl::Create_Process(regs);		
 		
 	}
 
