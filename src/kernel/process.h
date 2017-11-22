@@ -9,9 +9,9 @@ const int PCB_SIZE = 256;
 
 //PCB tabulka pro ulozeni zaznamu o procesech
 typedef struct process_control_block {
-	char *name;										//jmeno procesu
+	const char *name;										//jmeno procesu
 	int par_pid;									//pid rodice --- bude potreba?
-	char *path;										//aktualni cesta procesu v ktere pracuje
+	const char *path;										//aktualni cesta procesu v ktere pracuje
 	std::thread thread;								//vlakno ve kterem se spusti proces - pro ziskani thread ID pouzit .get_id()
 	std::vector<kiv_os::THandle> descriptors;		//descriptory pro in, out, err
 

@@ -29,6 +29,9 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 		if (file != nullptr) {
 			return  (f_des *)INVALID_HANDLE_VALUE;
 		}
+		else {
+			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
+		}
 
 	} else if (WRITE_UPDATE == mode) {
 		if (file != nullptr) {
@@ -112,15 +115,14 @@ char read_file(f_des *des) {
 }
 
 char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read) {
-	if (!des->reading) {
+	if (!des->reading) {		
 		return nullptr;
 	}
 
 	if (des->file->isDirectory) {
 		return nullptr;
 	}
-
-
+	
 	//TODO: otestovat zda se hodnota nezmìní po pøedání funkci
 	buffer = (char *)des->file->content.substr(start_pos, start_pos + size_to_read).c_str();
 	

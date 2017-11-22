@@ -58,6 +58,7 @@ bool kiv_os_rtl::Read_File(const kiv_os::THandle file_handle, const void *buffer
 	regs.rcx.r = buffer_size;
 	bool result = Do_SysCall(regs);
 	*filled = (size_t)regs.rax.r;
+
 	return result;
 }
 

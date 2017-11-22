@@ -20,23 +20,13 @@ void HandleIO(kiv_os::TRegisters &regs) {
 
 
 		case kiv_os::scWrite_File: {
-				DWORD written;
-				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
-				regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
-				if (!regs.flags.carry) regs.flags.carry = !WriteFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &written, NULL);
-				if (!regs.flags.carry) regs.rax.r = written;
-					else regs.rax.r = GetLastError();
+				Write_File(regs);
 
 			}
 			break; //scWriteFile
 
 		case kiv_os::scRead_File: {
-			DWORD read;
-			HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
-			regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
-			if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
-			if (!regs.flags.carry) regs.rax.r = read;
-			else regs.rax.r = GetLastError();
+			Read_File(regs);
 
 		}
 			break; //scReadFile
@@ -64,7 +54,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 		result = open_file((char*)regs.rdx.r, false, regs.rcx.h);
 	}
 
-	print_file_system();
+	//print_file_system();
 
 	// TO DO: pøedìlat na file descriptor
 	//HRESULT create_file = createChild(getRoot()->filePath, name, false);
@@ -79,3 +69,27 @@ void Create_File(kiv_os::TRegisters &regs) {
 	}
 }
 
+void Write_File(kiv_os::TRegisters &regs) {
+	DWORD written;
+	HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
+	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
+//	if (!regs.flags.carry) regs.flags.carry = !WriteFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &written, NULL);
+	if (!regs.flags.carry) {
+		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));
+		
+	}
+	if (!regs.flags.carry) regs.rax.r = static_cast<char>(regs.rcx.r);
+	else regs.rax.r = GetLastError();
+
+}
+
+void Read_File(kiv_os::TRegisters &regs) {
+	DWORD read;
+	HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
+	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
+	//if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
+	if (!regs.flags.carry) regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), 0, regs.rcx.r);
+	/*if (!regs.flags.carry) regs.rax.r = read;
+	else regs.rax.r = GetLastError();*/
+	
+}

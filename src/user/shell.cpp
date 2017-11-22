@@ -1,13 +1,13 @@
 
 #include "shell.h"
-#include <iostream>
-#include <string>
 #include "rtl.h"
 #include "parser.h"
+#include <iostream>
+#include <string>
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_in = kiv_os_rtl::Create_File("C://system/term/CONIN$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_in = kiv_os_rtl::Create_File("C://system/term/CONIN$", 2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 	kiv_os::THandle std_err = kiv_os_rtl::Create_File("C://system/term/CONERR$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 
 
@@ -21,39 +21,41 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	char * buf_command = new char[1001];
 	buf_command[1000] = '\0';
 	bool run = true;
-	std::string input;
 
-	while (std::getline(std::cin, input)) {
+	while (true) {
+		char* cur_path = "C://";
+		std::string input_;
+		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 256), written);
+		std::getline(std::cin, input_);
 		
 
-		std::string cur_path = "\nC:\\>";
-		char * cur_path_ = (char *)cur_path.c_str();
+		size_t filled;
+		
+		kiv_os_rtl::Read_File(std_in, buf_command, 1000, &filled);
+		printf("%s\n", buf_command);
+		/*
+		if (filled == 0 && buf_command[filled] == -1) { //goodbye
+			break;
+		}
+		buf_command[filled] = '\0';*/
 
-		kiv_os_rtl::Write_File(std_out, cur_path_, std::strlen(cur_path_), written);
-		char *input_ = (char *)input.c_str();
-		int input_size = input.length();
-		if (std::strcmp(input_, "ps") == 0) {	
-			regs.rdx.r = (decltype(regs.rdx.r))input_;
+	//	char *input = buf_command;
+		char *input = (char *)input_.c_str();
+		if (input_cmp(input, str_len(input, 1000), "ps", 8)) {
+			regs.rdx.r = (decltype(regs.rdx.r))input;
 			process_info.arg = "ps";
 			process_info.std_in = std_in;
 			process_info.std_out = std_out;
-			process_info.std_err = 2;
+			process_info.std_err = std_err;
 			regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 			kiv_os_rtl::Create_Process(regs);
 		}
 
-		if (input_cmp(input_, input_size, "shutdown", 8)) {
+		if (input_cmp(input, str_len(input, 1000), "shutdown", 8)) {
 			break;
 		}
 		
-		/*
-		size_t filled;
-		kiv_os_rtl::Read_File(std_out, buf_command, 1000, &filled);
-		if (filled == 0 && buf_command[filled] == EOF) { //goodbye
-			break;
-		}
-		buf_command[filled] = '\0';
-		*/
+		
 	}
 
 	kiv_os_rtl::Close_File(std_out);
