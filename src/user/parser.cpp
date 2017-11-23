@@ -1,17 +1,22 @@
 #include "parser.h"
+#include <stdio.h>
 
 void input_parser(char *input, int input_size) {
-
+	int i;
 	char args[256][1025];
-	int argc;
+	char command_part[1025];
+	int command_argc = 0;
+	int argc = 0;
 	parse_args(args, &argc, input, input_size);
-	if (input_cmp(input, input_size, "ps", 2)) {
-		
-	}
-	else if (input_cmp(input, input_size, "shutdown", 8)) {
 
-	}
+}
 
+void str_cpy (char *destination, char *string, int size_of_string){
+	int i;
+	for (i = 0; i < size_of_string; i++) {
+		destination[i] = string[i];
+	}
+	destination[size_of_string] = '\0';
 }
 
 
@@ -52,14 +57,15 @@ void parse_args (char args[][1025], int *argc, char *input, int size) {
 			//zapocita se jen jedna mezera protoze pak je jiz next_word = true
 			if (!next_word) {
 				next_word = true;
-				args[arg_num][act_index++] = '\0';
+				args[arg_num][act_index] = '\0';
 				arg_num++;
 				act_index = 0;
 			}
 		}
 	}
 
-	argc = &arg_num;
+	args[arg_num][act_index] = '\0';
+	(*argc) = arg_num ;
 }
 
 //precise - je pokud chceš pøesnou delku - default value false

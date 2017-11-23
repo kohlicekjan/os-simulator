@@ -63,6 +63,17 @@ void creating_os_structure() {
 	regs.rdx.x = regs.rax.x;
 	regs.rax.l = kiv_os::scClose_Handle;
 	HandleIO(regs);
+
+	regs.rax.h = kiv_os::scIO;
+	regs.rax.l = kiv_os::scCreate_File;
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>("C://system/proc");
+	regs.rcx.h = 2;
+	regs.rcx.l = 1;
+
+	HandleIO(regs);
+	regs.rdx.x = regs.rax.x;
+	regs.rax.l = kiv_os::scClose_Handle;
+	HandleIO(regs);
 }
 
 void __stdcall Run_VM() {
