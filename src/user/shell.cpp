@@ -51,13 +51,20 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		process_info.std_err = std_err;
 		regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 
+		kiv_os::THandle pipe_in;
+		kiv_os::THandle pipe_out;
+
 		input_size = str_len(input);
 		for (i = 0; i <= input_size; i++) {
 			if (input[i] == '|') {
 				command_part[command_argc] = '\0';
 				process_info.arg = command_part;
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
+
 				kiv_os_rtl::Create_Process(regs);
+
+			//	kiv_os_rtl::Create_Pipe(process_info.std_in, process_info.std_out);
+				
 				command_argc = 0;
 				name_loaded = false;
 				i++; // preskoci mezeru za |

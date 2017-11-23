@@ -4,6 +4,8 @@
 #include "file_system.h"
 #include <stdio.h>
 
+#include <chrono>
+
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
 PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256
 
@@ -92,13 +94,13 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	if(pid != 0){
 		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , true);
 	}
-
 	return S_OK;
 }
 
 
 void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConsole) {
-	
+	//uspani kvuli ulozeni threadu do PCB tabulky
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	kiv_os::TRegisters regs;
 	//ulozeni hodnot do registru
 	regs.rdx.r = (decltype(regs.rdx.r))process_table[pid]->name;
@@ -107,16 +109,26 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 
 	//spusteni procesu
 	size_t ret = func(regs);
+	{
+		std::lock_guard<std::mutex> lock(pcb_mutex);
+		process_table[pid]->thread.detach();
+		//smazani zaznamu o procesu
+		delete process_table[pid];
+		process_table[pid] = nullptr;
+	}
 	
 }
 
 HRESULT joinProcess(int pid) {
 	std::thread::id tid = process_table[pid]->thread.get_id();
 	//ukonceni procesu
-	process_table[pid]->thread.join();
-	//smazani zaznamu o procesu
-	delete process_table[pid];
-	process_table[pid] = nullptr;
+	{
+		std::lock_guard<std::mutex> lock(pcb_mutex);
+		process_table[pid]->thread.detach();
+		//smazani zaznamu o procesu
+		delete process_table[pid];
+		process_table[pid] = nullptr;
+	}
 	return S_OK;
 }
 

@@ -40,6 +40,13 @@ void HandleIO(kiv_os::TRegisters &regs) {
 			}
 
 			break;	//CloseFile
+
+		case kiv_os::scCreate_Pipe: {
+				Create_Pipe(regs);
+
+			}
+			break;
+		
 	}
 }
 
@@ -93,5 +100,9 @@ void Read_File(kiv_os::TRegisters &regs) {
 	else regs.rax.r = GetLastError();*/
 
 	fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
+	
+}
+
+void Create_Pipe(kiv_os::TRegisters &regs) {
 	
 }

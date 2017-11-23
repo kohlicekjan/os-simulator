@@ -33,8 +33,8 @@ kiv_os::THandle kiv_os_rtl::Create_File(const char* file_name, size_t flags, siz
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_File);
 	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(file_name);
 	
-	regs.rcx.h = flags;
-	regs.rcx.l = isDir;
+	regs.rcx.h = decltype(regs.rcx.h)(flags);
+	regs.rcx.l = decltype(regs.rcx.l)(isDir);
 	
 	Do_SysCall(regs);
 	return static_cast<kiv_os::THandle>(regs.rax.x);
@@ -68,6 +68,13 @@ bool kiv_os_rtl::Close_File(const kiv_os::THandle file_handle) {
 	return Do_SysCall(regs);
 }
 
+bool kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out) {
+	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_Pipe);
+	regs.rcx.x = static_cast<decltype(regs.rcx.x)>(file_in);
+	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_out);
+	return Do_SysCall(regs);
+}
+
 bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
 	char* name = reinterpret_cast<char *>(regs.rdx.r);
 	uint64_t process_info = regs.rdi.r;
@@ -76,6 +83,10 @@ bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
 	regs.rdi.r = process_info;
 	
 	return Do_SysCall(regs);
+}
+
+bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
+	return true;
 }
 
 bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters regs) {
