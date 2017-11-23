@@ -2,7 +2,7 @@
 #include "shell.h"
 #include "rtl.h"
 #include "parser.h"
-
+#include <stdio.h>
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
@@ -18,8 +18,14 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os_rtl::Write_File(std_out, output, 16, written);
 
 	char * buf_command = new char[256];
-	buf_command[255] = '\0';
 	bool run = true;
+
+	char command_part[1025];
+	char command_name[1025];
+	bool name_loaded = false;
+	int command_argc = 0;
+	int input_size = 0;
+	int i;
 
 	while (true) {
 		char* cur_path = "C://";
@@ -39,47 +45,59 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		buf_command[filled] = '\0';*/
 
 		char *input = buf_command;
-	//	char *input = (char *)input_.c_str();
-
-		regs.rdx.r = (decltype(regs.rdx.r))input;
+		
 		process_info.std_in = std_in;
 		process_info.std_out = std_out;
 		process_info.std_err = std_err;
 		regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 
-		if (input_cmp(input, str_len(input, 256), "ps", 8)) {	
-			process_info.arg = "ps";
-		}
-		if (input_cmp(input, str_len(input, 256), "cd", 8)) {
-			process_info.arg = "cd";
-		}
-		if (input_cmp(input, str_len(input, 256), "dir", 8)) {
-			process_info.arg = "dir";
-		}
-		if (input_cmp(input, str_len(input, 256), "echo", 8)) {
-			process_info.arg = "echo";
-		}
-		if (input_cmp(input, str_len(input, 256), "md", 8)) {
-			process_info.arg = "md";
-		}
-		if (input_cmp(input, str_len(input, 256), "rd", 8)) {
-			process_info.arg = "rd";
-		}
-		if (input_cmp(input, str_len(input, 256), "type", 8)) {
-			process_info.arg = "type";
-		}
-		if (input_cmp(input, str_len(input, 256), "sort", 8)) {
-			process_info.arg = "sort";
-		}
-		if (input_cmp(input, str_len(input, 256), "wc", 8)) {
-			process_info.arg = "wc";
-		}
-		if (input_cmp(input, str_len(input, 256), "shutdown", 8)) {
-			process_info.arg = "shutdown";
-			break;
+		input_size = str_len(input);
+		for (i = 0; i <= input_size; i++) {
+			if (input[i] == '|') {
+				command_part[command_argc] = '\0';
+				process_info.arg = command_part;
+				regs.rdx.r = (decltype(regs.rdx.r))command_name;
+				kiv_os_rtl::Create_Process(regs);
+				command_argc = 0;
+				name_loaded = false;
+				i++; // preskoci mezeru za |
+			}
+			else {
+				if ((input[i] == ' ' || input[i] == 10 ) && !name_loaded) {
+					name_loaded = true;
+					command_name[command_argc] = '\0';
+
+				}else if (!name_loaded) {
+					command_name[command_argc] = input[i];
+				}
+				
+				if (input[i] != 10) {
+					command_part[command_argc++] = input[i];
+				}
+			}
 		}
 
-		kiv_os_rtl::Create_Process(regs);		
+		if (name_loaded) {
+			command_part[input_size] = '\0';
+		}
+		else {
+			command_name[i] = '\0';
+		}
+
+		if (str_len(command_name) >= 2) {
+			regs.rdx.r = (decltype(regs.rdx.r))command_name;
+			process_info.arg = command_part;
+			kiv_os_rtl::Create_Process(regs);
+		}
+
+
+		/*
+		
+			DOPORUÈENÍ - POUŽIJ FUNKCI V PARSER.CPP PARSE_ARGS() PRO PARSOVÁNÍ ØÁDKU S ARGUMENTY
+		*/
+		
+		name_loaded = false;
+		command_argc = 0;
 		
 	}
 

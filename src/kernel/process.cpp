@@ -2,6 +2,7 @@
 #include "process.h"
 #include "kernel.h"
 #include "file_system.h"
+#include <stdio.h>
 
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
 PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256
@@ -28,7 +29,6 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	int pid = -1;
 	int parent_pid = -1;
 	std::vector<kiv_os::THandle> descriptors;
-	
 	//descriptory
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_in));
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_out));
@@ -104,7 +104,7 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	regs.rdx.r = (decltype(regs.rdx.r))process_table[pid]->name;
 	regs.rcx.r = (decltype(regs.rcx.r))arg;
 	regs.rax.r = (decltype(regs.rax.r))&process_table[pid]->descriptors;
-	
+
 	//spusteni procesu
 	size_t ret = func(regs);
 	

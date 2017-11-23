@@ -1,8 +1,10 @@
 #pragma once
+#include "../api/api.h"
 
 
-void input_parser(char *input, int input_size);
-
+void input_parser(char *input, int input_size, kiv_os::TRegisters &regs);
+void do_command(char args[][1025], int argc);
+void str_cpy(char *destination, char *string, int size_of_string);
 int str_len(char *input, int max_index = -1);
 
 // teoreticky parsuje øádek a dává to do pole - zatim omezena delka
