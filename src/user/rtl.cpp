@@ -68,6 +68,21 @@ bool kiv_os_rtl::Close_File(const kiv_os::THandle file_handle) {
 	return Do_SysCall(regs);
 }
 
+bool kiv_os_rtl::Get_Current_Directory(const char * buffer, const size_t buffer_size) {
+	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scGet_Current_Directory);
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(buffer);
+	regs.rcx.r = buffer_size;
+
+	return Do_SysCall(regs);
+}
+
+bool kiv_os_rtl::Set_Current_Directory(const char * buffer) {
+	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scSet_Current_Directory);
+	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(buffer);
+
+	return Do_SysCall(regs);
+}
+
 bool kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out) {
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_Pipe);
 	regs.rcx.x = static_cast<decltype(regs.rcx.x)>(file_in);
@@ -89,9 +104,9 @@ bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
 	return true;
 }
 
-bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters regs) {
+bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters &regs) {
 	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scReturnPCB);
 	bool result = Do_SysCall(regs);
-	
+
 	return result;
 }

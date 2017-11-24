@@ -85,7 +85,8 @@ void __stdcall Run_VM() {
 	if (shell) {
 
 		creating_os_structure();
-
+		char *boot_string = "Boot succesful\n";
+		fwrite(boot_string, sizeof(char), strlen(boot_string), stdout);
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
 

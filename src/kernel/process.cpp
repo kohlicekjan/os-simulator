@@ -7,7 +7,7 @@
 #include <chrono>
 
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
-PCB * process_table[PCB_SIZE] = { nullptr };	//PCB max 256
+PCB * process_table[PCB_SIZE];	//PCB max 256
 
 void HandleProcess(kiv_os::TRegisters &regs) {
 	switch (regs.rax.l){
@@ -94,6 +94,10 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	if(pid != 0){
 		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , true);
 	}
+	else {
+	//	process_table[pid]->thread = std::this_thread;
+	}
+
 	return S_OK;
 }
 
@@ -102,10 +106,16 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	//uspani kvuli ulozeni threadu do PCB tabulky
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	kiv_os::TRegisters regs;
+	kiv_os::TProcess_Startup_Info process_info;
+	process_info.arg = arg;
+	process_info.std_in = process_table[pid]->descriptors.at(0);
+	process_info.std_out = process_table[pid]->descriptors.at(1);
+	process_info.std_err = process_table[pid]->descriptors.at(2);
+
 	//ulozeni hodnot do registru
 	regs.rdx.r = (decltype(regs.rdx.r))process_table[pid]->name;
-	regs.rcx.r = (decltype(regs.rcx.r))arg;
-	regs.rax.r = (decltype(regs.rax.r))&process_table[pid]->descriptors;
+	regs.rcx.r = (decltype(regs.rax.r))pid;
+	regs.rax.r = (decltype(regs.rax.r))&process_info;
 
 	//spusteni procesu
 	size_t ret = func(regs);
@@ -132,7 +142,23 @@ HRESULT joinProcess(int pid) {
 	return S_OK;
 }
 
-void Get_PCB(kiv_os::TRegisters regs) {
-	regs.rdx.r = (decltype(regs.rdx.r))&process_table;
-	
+void Get_PCB(kiv_os::TRegisters &regs) {
+	regs.rdx.r = (decltype(regs.rdx.r))process_table;
+	int pids[PCB_SIZE];
+	int proc_count = 0;
+	for (int i = 0; i < PCB_SIZE; i++) {
+		if (process_table[i] != nullptr) {
+			pids[proc_count] = i;
+			proc_count++;
+			printf("%d\n", i);
+		}
+	}
+
+	pids[proc_count] = -1;
+
+	regs.rcx.r = (decltype(regs.rcx.r))sizeof(PCB);
+	regs.rdi.r = (decltype(regs.rdi.r))pids;
+
+
+
 }

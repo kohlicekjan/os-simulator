@@ -12,14 +12,12 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	kiv_os::TProcess_Startup_Info process_info;
 	
-	char* output = "Boot successful\n";
-	
 	size_t written;
-	kiv_os_rtl::Write_File(std_out, output, 16, written);
-
 	char * buf_command = new char[256];
 	bool run = true;
 
+	char * cur_path = new char[256];
+	size_t buffer_size = 256;
 	char command_part[1025];
 	char command_name[1025];
 	bool name_loaded = false;
@@ -27,8 +25,11 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	int input_size = 0;
 	int i;
 
+	kiv_os_rtl::Set_Current_Directory("C://system/term/");
+
 	while (true) {
-		char* cur_path = "C://";
+		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
+	//	printf("%s\n", cur_path);
 		//std::string input_;
 		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 256), written);
 	//	std::getline(std::cin, input_);
@@ -107,8 +108,9 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		command_argc = 0;
 		
 	}
-
+	kiv_os_rtl::Close_File(std_in);
 	kiv_os_rtl::Close_File(std_out);
+	kiv_os_rtl::Close_File(std_err);
 	return 0;
 }
 

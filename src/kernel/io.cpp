@@ -6,6 +6,7 @@
 #include "stdio.h"
 #include "file_descriptor.h"
 #include "file_system.h"
+#include "process.h"
 
 
 void HandleIO(kiv_os::TRegisters &regs) {
@@ -40,6 +41,17 @@ void HandleIO(kiv_os::TRegisters &regs) {
 			}
 
 			break;	//CloseFile
+		
+		case kiv_os::scGet_Current_Directory: {
+			Get_Current_Directory(regs);
+
+		}
+			break;
+
+		case kiv_os::scSet_Current_Directory: {
+			Set_Current_Directory(regs);
+		}
+			break;
 
 		case kiv_os::scCreate_Pipe: {
 				Create_Pipe(regs);
@@ -101,6 +113,48 @@ void Read_File(kiv_os::TRegisters &regs) {
 
 	fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
 	
+}
+
+void Get_Current_Directory(kiv_os::TRegisters &regs) {
+	int i, j = 0;
+
+	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
+	for (i = 0; i < PCB_SIZE; i++) {
+		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread.get_id()) {
+			while (j < strlen(process_table[0]->path)) {
+				buffer[j] = process_table[0]->path[j];
+				j++;
+			}
+			buffer[j] = '\0';
+			break;
+		}
+	}
+	if (i == PCB_SIZE) {
+		while (j < strlen(process_table[0]->path)) {
+			buffer[j] = process_table[0]->path[j];
+			j++;
+		}
+		buffer[j] = '\0';
+	}
+}
+
+void Set_Current_Directory(kiv_os::TRegisters &regs) {
+	int i, j = 0;
+	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
+	for (i = 0; i < PCB_SIZE; i++) {
+		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread.get_id()) {
+			set_actual_node(find_child(buffer));
+			process_table[i]->path = actual_node()->filePath.c_str();
+			break;
+		}
+	}
+
+	if (i == PCB_SIZE) {
+		set_actual_node(find_child(buffer));
+
+		process_table[0]->path = actual_node()->filePath.c_str();
+	}
+
 }
 
 void Create_Pipe(kiv_os::TRegisters &regs) {

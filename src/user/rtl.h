@@ -21,12 +21,16 @@ namespace kiv_os_rtl {
 	//uzavre soubor identifikovany pomoci deskriptoru
 	//vraci true, kdyz vse OK
 
+	bool Get_Current_Directory(const char * buffer, const size_t buffer_size);
+
+	bool Set_Current_Directory(const char * buffer);
+
 	bool Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out);
 
 	bool Create_Process(kiv_os::TRegisters &regs);
 
 	bool Wait_For(kiv_os::TRegisters &regs);
 
-	bool Return_PCB(kiv_os::TRegisters regs);
+	bool Return_PCB(kiv_os::TRegisters &regs);
 
 }
