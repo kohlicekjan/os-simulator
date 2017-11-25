@@ -17,6 +17,8 @@ namespace kiv_os_rtl {
 	//cte ze souboru data o urcite velikosti
 	bool Read_File(const kiv_os::THandle file_handle, const void *buffer, const size_t buffer_size, size_t *filled);
 
+	bool Delete_File(const char* file_name, size_t isDir);
+
 	bool Close_File(const kiv_os::THandle file_handle);
 	//uzavre soubor identifikovany pomoci deskriptoru
 	//vraci true, kdyz vse OK

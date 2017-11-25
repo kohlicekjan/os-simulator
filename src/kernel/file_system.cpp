@@ -65,7 +65,6 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 	if (child_exist(child->parent, name)) {
 		return nullptr;
 	}
-	printf("Path = %s\n", path.c_str());
 	child->parent->children.push_back(child);
 
 	return child;

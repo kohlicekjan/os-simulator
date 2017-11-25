@@ -32,6 +32,11 @@ void HandleIO(kiv_os::TRegisters &regs) {
 		}
 			break; //scReadFile
 
+		case kiv_os::scDelete_File: {
+			Delete_File(regs);
+		}
+			break;
+
 		case kiv_os::scClose_Handle: {
 				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
 
@@ -113,6 +118,19 @@ void Read_File(kiv_os::TRegisters &regs) {
 
 	fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
 	
+}
+
+void Delete_File(kiv_os::TRegisters &regs) {
+	int result;
+	FSystem *dir = find_child((char*)regs.rdx.r);
+
+	if (dir != nullptr) {
+		result = delete_child(dir);
+		regs.rax.h = 0;
+	}
+	else {
+		regs.rax.h = kiv_os::erFile_Not_Found;
+	}
 }
 
 void Get_Current_Directory(kiv_os::TRegisters &regs) {
