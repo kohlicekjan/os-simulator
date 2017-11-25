@@ -25,8 +25,6 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	int input_size = 0;
 	int i;
 
-	kiv_os_rtl::Set_Current_Directory("C://system/term/");
-
 	while (true) {
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
 	//	printf("%s\n", cur_path);
@@ -93,10 +91,20 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		}
 
 		if (str_len(command_name) >= 2) {
-			regs.rdx.r = (decltype(regs.rdx.r))command_name;
-			process_info.arg = command_part;
-			kiv_os_rtl::Create_Process(regs);
+			char arg[10][1025];
+			int argc;
+			parse_args(arg, &argc, command_part, str_len(command_part));
+			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
+				kiv_os_rtl::Set_Current_Directory(arg[1]);
+			}
+			else {
+				regs.rdx.r = (decltype(regs.rdx.r))command_name;
+				process_info.arg = command_part;
+				kiv_os_rtl::Create_Process(regs);
+			}
 		}
+
+		
 
 
 		/*

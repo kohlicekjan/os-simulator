@@ -2,6 +2,7 @@
 #include "process.h"
 #include "kernel.h"
 #include "file_system.h"
+#include <string.h>
 #include <stdio.h>
 
 #include <chrono>
@@ -56,22 +57,25 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if(process_table[i] != NULL){
-			if (process_table[i]->thread.get_id() == std::this_thread::get_id()) {
+			if (process_table[i]->thread_id == std::this_thread::get_id()) {
 				parent_pid = i;
 				break;
 			}
 		}
 	}
-
+	
 	
 	process_table[pid]->name = name;
 	process_table[pid]->par_pid = parent_pid;	
-	
-	if(parent_pid > 0 && process_table[pid] != NULL){
+
+	if(parent_pid >= 0 && process_table[pid] != NULL){
 		process_table[pid]->path = process_table[parent_pid]->path;
 	}
 	else {
-		process_table[pid]->path = get_root()->filePath.c_str();	
+		char* path = (char *)get_root()->filename.c_str();
+		strcat_s(path, strlen(path) + strlen(get_root()->filePath.c_str()) + 1, get_root()->filePath.c_str());
+		
+		process_table[pid]->path = path;
 	}
 
 	for(auto &descriptor : descriptors){
@@ -95,7 +99,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , true);
 	}
 	else {
-	//	process_table[pid]->thread = std::this_thread;
+		process_table[pid]->thread_id = std::this_thread::get_id();
 	}
 
 	return S_OK;
@@ -104,6 +108,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 
 void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConsole) {
 	//uspani kvuli ulozeni threadu do PCB tabulky
+	process_table[pid]->thread_id = std::this_thread::get_id();
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	kiv_os::TRegisters regs;
 	kiv_os::TProcess_Startup_Info process_info;

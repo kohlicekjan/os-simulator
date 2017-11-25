@@ -150,9 +150,15 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 	}
 
 	if (i == PCB_SIZE) {
-		set_actual_node(find_child(buffer));
-
+		FSystem *node = find_child(buffer);
+		if(node != nullptr){
+			set_actual_node(node);
+		}
+		else {
+			printf("Directory '%s' doesn't exists.\n", buffer);
+		}
 		process_table[0]->path = actual_node()->filePath.c_str();
+		
 	}
 
 }

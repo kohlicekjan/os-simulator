@@ -13,6 +13,7 @@ typedef struct process_control_block {
 	int par_pid;									//pid rodice --- bude potreba?
 	const char *path;										//aktualni cesta procesu v ktere pracuje
 	std::thread thread;								//vlakno ve kterem se spusti proces - pro ziskani thread ID pouzit .get_id()
+	std::thread::id thread_id;
 	std::vector<kiv_os::THandle> descriptors;		//descriptory pro in, out, err
 
 }PCB;
