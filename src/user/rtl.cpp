@@ -35,7 +35,6 @@ kiv_os::THandle kiv_os_rtl::Create_File(const char* file_name, size_t flags, siz
 	
 	regs.rcx.h = decltype(regs.rcx.h)(flags);
 	regs.rcx.l = decltype(regs.rcx.l)(isDir);
-	
 	Do_SysCall(regs);
 	return static_cast<kiv_os::THandle>(regs.rax.x);
 }

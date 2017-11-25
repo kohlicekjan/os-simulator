@@ -118,9 +118,8 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_err = process_table[pid]->descriptors.at(2);
 
 	//ulozeni hodnot do registru
-	regs.rdx.r = (decltype(regs.rdx.r))process_table[pid]->name;
-	regs.rcx.r = (decltype(regs.rax.r))pid;
-	regs.rax.r = (decltype(regs.rax.r))&process_info;
+	regs.rcx.r = (decltype(regs.rcx.r))pid;
+	regs.rdx.r = (decltype(regs.rdx.r))&process_info;
 
 	//spusteni procesu
 	size_t ret = func(regs);
