@@ -114,6 +114,10 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_out = process_table[pid]->descriptors.at(1);
 	process_info.std_err = process_table[pid]->descriptors.at(2);
 
+	if (memcmp(arg, "ps", 2) == 0) {
+		process_info.std_in = Get_PCB();
+	}
+
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
 	regs.rdx.r = (decltype(regs.rdx.r))&process_info;
@@ -151,7 +155,6 @@ void Wait_For(int pid) {
 }
 
 kiv_os::THandle Get_PCB() {
-
 	char buffer[100];
 	f_des* proc = open_file("C://system/proc/ps");
 	f_des* read = open_file("C://system/proc/ps", false, READ);
