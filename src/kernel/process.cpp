@@ -114,13 +114,6 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_out = process_table[pid]->descriptors.at(1);
 	process_info.std_err = process_table[pid]->descriptors.at(2);
 
-	if (memcmp(arg, "ps", 2) == 0) {
-		process_info.std_in = Get_PCB();
-	}
-	if (memcmp(arg, "dir", 3) == 0){
-		process_info.std_in = Get_Dir();
-	}
-
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
 	regs.rdx.r = (decltype(regs.rdx.r))&process_info;

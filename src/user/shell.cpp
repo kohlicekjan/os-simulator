@@ -11,9 +11,9 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	kiv_os::TProcess_Startup_Info* shell_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
 
-	kiv_os::THandle std_out = shell_info->std_out;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_in = shell_info->std_in;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_err = shell_info->std_err;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_out = shell_info->std_out;
+	kiv_os::THandle std_in = shell_info->std_in;
+	kiv_os::THandle std_err = shell_info->std_err;
 
 	kiv_os::TProcess_Startup_Info process_info;
 	
@@ -32,21 +32,12 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	while (true) {
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
-	//	printf("%s\n", cur_path);
-		//std::string input_;
+
 		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 256), written);
-	//	std::getline(std::cin, input_);
-		
 
 		size_t filled;
 		
 		kiv_os_rtl::Read_File(std_in, buf_command, 256, &filled);
-		
-		/*
-		if (filled == 0 && buf_command[filled] == -1) { //goodbye
-			break;
-		}
-		buf_command[filled] = '\0';*/
 
 		char *input = buf_command;
 		
@@ -103,6 +94,27 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			//vzdy pro shell udelat
 			if (input_cmp(command_name, str_len(command_name), "shell", str_len("shell"), true)) {
 				process_info.std_in = std_in;
+			}
+
+			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
+				char buffer[100];
+				written = 0;
+				if (argc == 2) {
+					//zmena adresare
+				}
+
+				//potreba vratit handle na slozku
+				kiv_os::THandle dir = kiv_os_rtl::Create_File(cur_path, 2);
+
+				while (true) {
+					//precte obsah adresare
+					kiv_os_rtl::Read_File(dir, buffer, 100, &written);
+					if (written == 0) {
+						break;
+					}
+					//vypise na konzoli
+					kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+				}
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {

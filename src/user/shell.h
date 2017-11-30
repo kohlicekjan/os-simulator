@@ -1,7 +1,6 @@
 #pragma once
 
 #include "..\api\api.h"
-#include "ps.h"
 
 extern "C" size_t __stdcall shell(kiv_os::TRegisters &regs);
 
