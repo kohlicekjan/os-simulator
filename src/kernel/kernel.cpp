@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "io.h"
 #include "process.h"
+#include "handles.h"
 #include <Windows.h>
 
 
@@ -92,9 +93,14 @@ void __stdcall Run_VM() {
 
 		//struktura pro inicializaci argumentu procesu
 		kiv_os::TProcess_Startup_Info init;
+
+		init.std_in = Convert_Native_Handle(stdin);
+		init.std_out = Convert_Native_Handle(stdout);
+		init.std_err = Convert_Native_Handle(stderr);
 		int pid = -1;
 		//vytvoreni init procesu s PID = 0
 		if (createProcess("shell", &init) == S_OK) {
+			regs.rdx.r = (decltype(regs.rdx.r))&init;
 			shell(regs);
 		}
 		

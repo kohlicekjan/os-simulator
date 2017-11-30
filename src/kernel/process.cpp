@@ -2,6 +2,7 @@
 #include "process.h"
 #include "kernel.h"
 #include "file_system.h"
+#include "handles.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -18,7 +19,7 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 			break;
 		}
 		case kiv_os::scWait_For: {
-			
+			Wait_For(regs.rdx.r);
 			break;
 		}
 		case kiv_os::scReturnPCB: {
@@ -56,14 +57,13 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	}
 
 	for (int i = 0; i < PCB_SIZE; i++) {
-		if(process_table[i] != NULL){
+		if(process_table[i] != nullptr){
 			if (process_table[i]->thread_id == std::this_thread::get_id()) {
 				parent_pid = i;
 				break;
 			}
 		}
 	}
-	
 	
 	process_table[pid]->name = name;
 	process_table[pid]->par_pid = parent_pid;	
@@ -102,7 +102,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 		process_table[pid]->thread_id = std::this_thread::get_id();
 	}
 
-	return S_OK;
+	return pid;
 }
 
 
@@ -116,6 +116,8 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_in = process_table[pid]->descriptors.at(0);
 	process_info.std_out = process_table[pid]->descriptors.at(1);
 	process_info.std_err = process_table[pid]->descriptors.at(2);
+
+	//process_info.std_out = Convert_Native_Handle(stdout);
 
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
@@ -144,6 +146,12 @@ HRESULT joinProcess(int pid) {
 		process_table[pid] = nullptr;
 	}
 	return S_OK;
+}
+
+void Wait_For(int pid) {
+	while (process_table[pid] != nullptr) {
+
+	}
 }
 
 void Get_PCB(kiv_os::TRegisters &regs) {

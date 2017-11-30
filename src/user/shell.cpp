@@ -5,10 +5,15 @@
 #include <stdio.h>
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
-	kiv_os::THandle std_out = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_in = kiv_os_rtl::Create_File("C://system/term/CONIN$", 2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_err = kiv_os_rtl::Create_File("C://system/term/CONERR$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	/*kiv_os::THandle std_out_ex = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_in_ex = kiv_os_rtl::Create_File("C://system/term/CONIN$", 2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_err_ex = kiv_os_rtl::Create_File("C://system/term/CONERR$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN */
 
+	kiv_os::TProcess_Startup_Info* shell_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
+
+	kiv_os::THandle std_out = shell_info->std_out;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_in = shell_info->std_in;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
+	kiv_os::THandle std_err = shell_info->std_err;	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
 
 	kiv_os::TProcess_Startup_Info process_info;
 	
@@ -100,7 +105,10 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			else {
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
 				process_info.arg = command_part;
-				kiv_os_rtl::Create_Process(regs);
+				if (kiv_os_rtl::Create_Process(regs) == true) {
+					kiv_os_rtl::Wait_For(regs);
+				}
+				
 			}
 		}
 

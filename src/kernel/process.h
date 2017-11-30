@@ -29,6 +29,8 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char *arg, bool stdinIsConso
 
 HRESULT joinProcess(int pid);
 
+void Wait_For(int pid);
+
 void Get_PCB(kiv_os::TRegisters &regs);
 
 //tabulka procesu

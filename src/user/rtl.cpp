@@ -109,7 +109,10 @@ bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
 }
 
 bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
-	return true;
+	int pid = regs.rax.r;
+	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scWait_For);
+	regs.rdx.r = pid;
+	return Do_SysCall(regs);
 }
 
 bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters &regs) {
