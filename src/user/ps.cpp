@@ -17,21 +17,21 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	
 	if (kiv_os_rtl::Return_PCB(regs) == true) {
 		
-		int process_size = regs.rcx.r;
+		int process_size = regs.rcx.e;
 		int* pids = reinterpret_cast<int*>(regs.rdi.r);
 
-		size_t written;
+		size_t written = 0;
 
 		char* process_table = reinterpret_cast<char *>(regs.rdx.r);
-		char *process;
+		//char *process;
 		int i = 0;
 		
-		kiv_os_rtl::Write_File(std_out, process_table, process_size, written);
+		//kiv_os_rtl::Write_File(std_out, process_table, process_size, written);
 
 		/* WTF? */
-	/*	printf("%d\n", pids[2]);
-		printf("%d\n", pids[2]);
-	*/	
+	//	printf("%d\n", pids[2]);
+	//	printf("%d\n", pids[2]);
+		
 		/*
 		while (pids[i] != -1) {
 			printf("%d\n", pids[i]);

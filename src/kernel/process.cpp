@@ -162,15 +162,12 @@ void Get_PCB(kiv_os::TRegisters &regs) {
 		if (process_table[i] != nullptr) {
 			pids[proc_count] = i;
 			proc_count++;
-			printf("%d\n", i);
 		}
 	}
 
 	pids[proc_count] = -1;
 
-	regs.rcx.r = (decltype(regs.rcx.r))sizeof(PCB);
+	regs.rcx.e = (decltype(regs.rcx.e))sizeof(PCB);
 	regs.rdi.r = (decltype(regs.rdi.r))pids;
-
-
 
 }

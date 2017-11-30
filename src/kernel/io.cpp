@@ -37,6 +37,16 @@ void HandleIO(kiv_os::TRegisters &regs) {
 		}
 			break;
 
+		case kiv_os::scSet_File_Position: {
+			Set_File_Position(regs);
+		}
+			break;
+
+		case kiv_os::scGet_File_Position: {
+			Get_File_Position(regs);
+		}
+			break;
+
 		case kiv_os::scClose_Handle: {
 				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
 
@@ -102,8 +112,7 @@ void Write_File(kiv_os::TRegisters &regs) {
 		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));
 		
 		if(hnd == stdout)
-			fwrite(reinterpret_cast<char*>(regs.rdi.r), sizeof(char), regs.rcx.r, (FILE*)hnd); //tohle bude potreba prepsat!!!!
-			
+			fwrite(reinterpret_cast<char*>(regs.rdi.r), sizeof(char), regs.rcx.r, (FILE*)hnd);
 		
 	}
 	if (!regs.flags.carry) regs.rax.r = static_cast<char>(regs.rcx.r);
@@ -135,6 +144,26 @@ void Delete_File(kiv_os::TRegisters &regs) {
 	}
 	else {
 		regs.rax.h = kiv_os::erFile_Not_Found;
+	}
+}
+
+void Set_File_Position(kiv_os::TRegisters &regs) {
+	HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
+	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
+	
+	if (!regs.flags.carry) {
+		set_act_pos(reinterpret_cast<f_des*>(hnd), regs.rdi.r);
+
+	}
+}
+
+void Get_File_Position(kiv_os::TRegisters &regs) {
+	HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
+	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
+
+	if (!regs.flags.carry) {
+		regs.rax.e = act_pos(reinterpret_cast<f_des*>(hnd));
+
 	}
 }
 

@@ -19,6 +19,10 @@ namespace kiv_os_rtl {
 
 	bool Delete_File(const char* file_name, size_t isDir);
 
+	bool Set_File_Position(const kiv_os::THandle file_handle, const size_t new_position);
+
+	bool Get_File_Position(const kiv_os::THandle file_handle, const uint8_t position_type);
+
 	bool Close_File(const kiv_os::THandle file_handle);
 	//uzavre soubor identifikovany pomoci deskriptoru
 	//vraci true, kdyz vse OK

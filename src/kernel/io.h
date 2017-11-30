@@ -12,6 +12,10 @@ void Read_File(kiv_os::TRegisters &regs);
 
 void Delete_File(kiv_os::TRegisters &regs);
 
+void Set_File_Position(kiv_os::TRegisters &regs);
+
+void Get_File_Position(kiv_os::TRegisters &regs);
+
 void Get_Current_Directory(kiv_os::TRegisters &regs);
 
 void Set_Current_Directory(kiv_os::TRegisters &regs);

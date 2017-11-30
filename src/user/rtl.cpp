@@ -70,6 +70,25 @@ bool kiv_os_rtl::Delete_File(const char* file_name, size_t isDir) {
 	return static_cast<kiv_os::THandle>(regs.rax.x);
 }
 
+bool kiv_os_rtl::Set_File_Position(const kiv_os::THandle file_handle, size_t new_position) {
+	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scSet_File_Position);
+
+	regs.rdx.r = static_cast<decltype(regs.rdx.x)>(file_handle);
+	regs.rdi.r = new_position;
+
+	return Do_SysCall(regs);
+}
+
+bool kiv_os_rtl::Get_File_Position(const kiv_os::THandle file_handle, const uint8_t position_type) {
+	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scGet_File_Position);
+
+	regs.rdx.r = static_cast<decltype(regs.rdx.x)>(file_handle);
+	regs.rcx.h = position_type;
+
+	//regs.rax.e == file position
+	return Do_SysCall(regs);
+}
+
 bool kiv_os_rtl::Close_File(const kiv_os::THandle file_handle) {
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scClose_Handle);
 	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_handle);
@@ -109,7 +128,7 @@ bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
 }
 
 bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
-	int pid = regs.rax.r;
+	size_t pid = regs.rax.r;
 	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scWait_For);
 	regs.rdx.r = pid;
 	return Do_SysCall(regs);
