@@ -41,7 +41,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 		char *input = buf_command;
 		
-		//process_info.std_in = std_in;
+		process_info.std_in = std_in;
 		process_info.std_out = std_out;
 		process_info.std_err = std_err;
 		regs.rdi.r = (decltype(regs.rdi.r))&process_info;

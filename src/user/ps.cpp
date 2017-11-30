@@ -17,7 +17,7 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	char *buffer = new char[100];
 	size_t written = 0;
 
-	str_cpy(buffer, "PID\t Name \t\t Working directory\n", str_len("PID\t Name \t\t Working directory\n"));
+	str_cpy(buffer, "PID\t TID\t Name \t\t Working directory\n", str_len("PID\t TID\t Name \t\t Working directory\n"));
 	kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 
 	while(true){

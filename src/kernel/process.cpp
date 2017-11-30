@@ -93,7 +93,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 
 	// u prvniho shellu nechceme vytvaret dalsi vlakno - to prvni by skoncilo a zustal by sirotek :(
 	if(pid != 0){
-		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , true);
+		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , false);
 	}
 	else {
 		process_table[pid]->thread_id = std::this_thread::get_id();
@@ -117,6 +117,7 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	if (memcmp(arg, "ps", 2) == 0) {
 		process_info.std_in = Get_PCB();
 	}
+	
 
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
@@ -124,6 +125,11 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 
 	//spusteni procesu
 	size_t ret = func(regs);
+
+	if (memcmp(arg, "shutdown", 8) == 0) {	
+		exit(0);
+	}
+
 	{
 		std::lock_guard<std::mutex> lock(pcb_mutex);
 		process_table[pid]->thread.detach();
@@ -161,7 +167,7 @@ kiv_os::THandle Get_PCB() {
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr) {
 			//memset(buffer, ' ', 100);
-			sprintf_s(buffer, 100, "%d\t %s \t\t %s\n", i, process_table[i]->name, process_table[i]->path);
+			sprintf_s(buffer, 100, "%d\t %d\t %s \t\t %s\n", i, process_table[i]->thread_id, process_table[i]->name, process_table[i]->path);
 			write_file(proc, buffer, strlen(buffer));
 		}
 	}
