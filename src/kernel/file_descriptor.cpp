@@ -27,7 +27,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	} else if(READ == mode) {
 		descriptor->writing = false;
 		if (file != nullptr) {
-			return  (f_des *)INVALID_HANDLE_VALUE;
+			//return  (f_des *)INVALID_HANDLE_VALUE;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
@@ -114,7 +114,7 @@ char read_file(f_des *des) {
 	return next_char;
 }
 
-char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read) {
+char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size_t &read) {
 	if (!des->reading) {		
 		return nullptr;
 	}
@@ -123,10 +123,22 @@ char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read) {
 		return nullptr;
 	}
 	
-	//TODO: otestovat zda se hodnota nezmìní po pøedání funkci
-	buffer = (char *)des->file->content.substr(start_pos, start_pos + size_to_read).c_str();
 	
-	return buffer;
+	//TODO: otestovat zda se hodnota nezmìní po pøedání funkci
+	if (start_pos + size_to_read < des->file->content.length()) {
+		sprintf_s(buffer, size_to_read, "%s", des->file->content.substr(start_pos, size_to_read-1).c_str());
+		des->act_pos = start_pos + size_to_read - 1;
+		read = size_to_read-1;
+		return buffer;
+	}
+	else {
+		sprintf_s(buffer, size_to_read, "%s", des->file->content.substr(start_pos, des->file->content.length()-1).c_str());
+		read = (des->file->content.length() - 1) - start_pos;
+		des->act_pos = start_pos + read;
+		//kvuli mezere na konci vypisu
+		buffer[read] = '\0';
+		return buffer;
+	}
 }
 
 //zapisuje na konec souboru
@@ -142,6 +154,7 @@ HRESULT write_file(f_des *des, char *to_write, char size_to_write) {
 	des->file->content.pop_back();
 	des->file->content.append(to_write);
 	des->file->content.push_back(EOF);
+	
 	return S_OK;
 }
 

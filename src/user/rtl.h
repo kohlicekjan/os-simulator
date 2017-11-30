@@ -37,6 +37,4 @@ namespace kiv_os_rtl {
 
 	bool Wait_For(kiv_os::TRegisters &regs);
 
-	bool Return_PCB(kiv_os::TRegisters &regs);
-
 }

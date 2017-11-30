@@ -133,10 +133,3 @@ bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
 	regs.rdx.r = pid;
 	return Do_SysCall(regs);
 }
-
-bool kiv_os_rtl::Return_PCB(kiv_os::TRegisters &regs) {
-	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scReturnPCB);
-	bool result = Do_SysCall(regs);
-
-	return result;
-}

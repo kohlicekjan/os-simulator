@@ -110,7 +110,7 @@ void Write_File(kiv_os::TRegisters &regs) {
 //	if (!regs.flags.carry) regs.flags.carry = !WriteFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &written, NULL);
 	if (!regs.flags.carry) {
 		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));
-		
+		written = static_cast<char>(regs.rcx.r);
 		if(hnd == stdout)
 			fwrite(reinterpret_cast<char*>(regs.rdi.r), sizeof(char), regs.rcx.r, (FILE*)hnd);
 		
@@ -121,13 +121,16 @@ void Write_File(kiv_os::TRegisters &regs) {
 }
 
 void Read_File(kiv_os::TRegisters &regs) {
-	DWORD read;
+	size_t read;
 	HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
 	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
 	//if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
-	if (!regs.flags.carry) regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), 0, regs.rcx.r);
-	/*if (!regs.flags.carry) regs.rax.r = read;
-	else regs.rax.r = GetLastError();*/
+	if (!regs.flags.carry) {
+		regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), reinterpret_cast<f_des*>(hnd)->act_pos, regs.rcx.r, read);
+	}
+	if (!regs.flags.carry) regs.rax.r = read;
+	else regs.rax.r = GetLastError();
+
 	if (hnd == stdin) {
 		fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
 	}

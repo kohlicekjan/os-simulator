@@ -99,6 +99,12 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			char arg[10][1025];
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
+
+			//vzdy pro shell udelat
+			if (input_cmp(command_name, str_len(command_name), "shell", str_len("shell"), true)) {
+				process_info.std_in = std_in;
+			}
+
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
 				kiv_os_rtl::Set_Current_Directory(arg[1]);
 			}

@@ -31,7 +31,7 @@ void set_act_pos(f_des *des, int pos);
 bool is_EOF(f_des *des);
 
 char read_file(f_des *des); //read one byte
-char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read);
+char *read_file(f_des *des, char *buffer, int start_pos, int size_to_read, size_t &read);
 
 HRESULT write_file(f_des *des, char *to_write, char size_to_write);
 HRESULT write_file(f_des *des, char *buffer, int start_pos, int size_to_read);

@@ -31,7 +31,7 @@ HRESULT joinProcess(int pid);
 
 void Wait_For(int pid);
 
-void Get_PCB(kiv_os::TRegisters &regs);
+kiv_os::THandle Get_PCB();
 
 //tabulka procesu
 extern PCB *process_table[PCB_SIZE];

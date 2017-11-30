@@ -2,6 +2,7 @@
 #include "process.h"
 #include "kernel.h"
 #include "file_system.h"
+#include "file_descriptor.h"
 #include "handles.h"
 #include <string.h>
 #include <stdio.h>
@@ -20,10 +21,6 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 		}
 		case kiv_os::scWait_For: {
 			Wait_For(regs.rdx.r);
-			break;
-		}
-		case kiv_os::scReturnPCB: {
-			Get_PCB(regs);
 			break;
 		}
 	}
@@ -117,7 +114,9 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_out = process_table[pid]->descriptors.at(1);
 	process_info.std_err = process_table[pid]->descriptors.at(2);
 
-	//process_info.std_out = Convert_Native_Handle(stdout);
+	if (memcmp(arg, "ps", 2) == 0) {
+		process_info.std_in = Get_PCB();
+	}
 
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
@@ -150,24 +149,24 @@ HRESULT joinProcess(int pid) {
 
 void Wait_For(int pid) {
 	while (process_table[pid] != nullptr) {
-
+		//at si taky odpocine
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
-void Get_PCB(kiv_os::TRegisters &regs) {
-	regs.rdx.r = (decltype(regs.rdx.r))process_table;
-	int pids[PCB_SIZE];
-	int proc_count = 0;
+kiv_os::THandle Get_PCB() {
+
+	char buffer[100];
+	f_des* proc = open_file("C://system/proc/ps");
+	f_des* read = open_file("C://system/proc/ps", false, READ);
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr) {
-			pids[proc_count] = i;
-			proc_count++;
+			//memset(buffer, ' ', 100);
+			sprintf_s(buffer, 100, "%d\t %s \t\t %s\n", i, process_table[i]->name, process_table[i]->path);
+			write_file(proc, buffer, strlen(buffer));
 		}
 	}
 
-	pids[proc_count] = -1;
-
-	regs.rcx.e = (decltype(regs.rcx.e))sizeof(PCB);
-	regs.rdi.r = (decltype(regs.rdi.r))pids;
+	return Convert_Native_Handle(read);
 
 }

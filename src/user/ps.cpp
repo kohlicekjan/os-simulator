@@ -15,29 +15,19 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = process_info->std_out;
 	kiv_os::THandle std_err = process_info->std_err;
 	
-	if (kiv_os_rtl::Return_PCB(regs) == true) {
-		
-		int process_size = regs.rcx.e;
-		int* pids = reinterpret_cast<int*>(regs.rdi.r);
+	char *buffer = new char[30];
+	size_t written = 0;
 
-		size_t written = 0;
+	str_cpy(buffer, "PID\t Name \t\t Working directory\n", str_len("PID\t Name \t\t Working directory\n"));
+	kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 
-		char* process_table = reinterpret_cast<char *>(regs.rdx.r);
-		//char *process;
-		int i = 0;
+	while(true){
 		
-		//kiv_os_rtl::Write_File(std_out, process_table, process_size, written);
-
-		/* WTF? */
-	//	printf("%d\n", pids[2]);
-	//	printf("%d\n", pids[2]);
-		
-		/*
-		while (pids[i] != -1) {
-			printf("%d\n", pids[i]);
-			i++;
-		}*/
-		
+		kiv_os_rtl::Read_File(std_in, buffer, 30, &written);
+		if (written == 0) {
+			break;
+		}
+		kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 	}
 	
 	return 0; 
