@@ -2,7 +2,6 @@
 #include "ps.h"
 #include "rtl.h"
 #include "parser.h"
-#include <stdio.h>
 
 size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	//systemove volani do jadra
@@ -15,7 +14,7 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = process_info->std_out;
 	kiv_os::THandle std_err = process_info->std_err;
 	
-	char *buffer = new char[30];
+	char *buffer = new char[100];
 	size_t written = 0;
 
 	str_cpy(buffer, "PID\t Name \t\t Working directory\n", str_len("PID\t Name \t\t Working directory\n"));
@@ -23,7 +22,7 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 
 	while(true){
 		
-		kiv_os_rtl::Read_File(std_in, buffer, 30, &written);
+		kiv_os_rtl::Read_File(std_in, buffer, 100, &written);
 		if (written == 0) {
 			break;
 		}
