@@ -15,4 +15,8 @@ void parse_echo(char args[], char *input, int size);
 //precise - je pokud chceš pøesnou delku
 bool input_cmp(char *first, int first_size, char *second, int second_size, bool isPrecise = false);
 
+char* atoi(int value, char *str);
+
+//retezec str prida na konec retezce dest
+char* str_cat(char* dest, char* str);
 

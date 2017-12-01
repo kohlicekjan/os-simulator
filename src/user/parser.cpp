@@ -106,4 +106,28 @@ bool input_cmp(char *first, int first_size, char *second, int second_size, bool 
 	return true;
 }
 
+char* atoi(int value, char *str) {
+	int i = 0;
+	for (int max_number = 1000000000; value != 0; max_number = max_number/10) {
+		if (value / max_number >= 1 || i > 0) {
+			//asci kod 0
+			str[i] = (value / max_number) + 48;
+			value = value % max_number;
+			i++;
+		}
+	}
+	str[i] = '\0';
+	return str;
+}
+
+char* str_cat(char* dest, char* str) {
+	int i = str_len(dest);
+	int j;
+	for (j = 0; j < str_len(str); j++) {
+		dest[i+j] = str[j];
+	}
+	dest[i + j] = '\0';
+	return dest;
+}
+
 
