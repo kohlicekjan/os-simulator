@@ -12,6 +12,10 @@ void parse_args(char args[][1025], int *argc, char *input, int size);
 
 void parse_echo(char args[], char *input, int size);
 
+void parse_lines(char** args, char input[], int input_size);
+
+int count_lines(char input[], int input_size);
+
 //precise - je pokud chceš pøesnou delku
 bool input_cmp(char *first, int first_size, char *second, int second_size, bool isPrecise = false);
 

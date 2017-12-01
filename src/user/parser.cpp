@@ -130,4 +130,30 @@ char* str_cat(char* dest, char* str) {
 	return dest;
 }
 
+int count_lines(char input[], int input_size) {
+	int lines = 1;
+	for (int i = 0; i < input_size; i++) {
+		if (input[i] == '\n') {
+			lines++;
+		}
+	}
+	return lines;
+}
+
+void parse_lines(char** args, char input[], int input_size) {
+	int lines = 0;
+	int j = 0;
+	for (int i = 0; i < input_size; i++) {
+		args[lines][j] = input[i];
+		j++;
+		if (input[i] == '\n') {
+			args[lines][j] = '\0';
+			lines++;
+			j = 0;
+		}
+	}
+	args[lines][j] = '\n';
+	args[lines][j+1] = '\0';
+}
+
 
