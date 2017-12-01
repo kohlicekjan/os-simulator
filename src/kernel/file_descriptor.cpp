@@ -151,6 +151,7 @@ HRESULT write_file(f_des *des, char *to_write, char size_to_write) {
 	if (des->file->isDirectory) {
 		return E_INVALIDARG;
 	}
+	
 	des->file->content.pop_back();
 	des->file->content.append(to_write);
 	des->file->content.push_back(EOF);

@@ -99,7 +99,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 		regs.rax.x = Convert_Native_Handle(result); 
 	}
 	else {
-		regs.rax.r = GetLastError();
+		regs.rax.r = kiv_os::erInvalid_Handle;
 	}
 }
 
