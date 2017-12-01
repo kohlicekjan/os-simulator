@@ -68,6 +68,23 @@ void parse_args (char args[][1025], int *argc, char *input, int size) {
 	(*argc) = arg_num + 1 ; // +1 at vraci pocet argumentù (misto èísla nejvìtšího indexu)
 }
 
+void parse_echo(char args[], char *input, int size) {
+	int i, j = 0;
+	bool output = false;
+
+	for (i = 0; i < size; i++) {
+		if (output) {
+			args[j] = input[i];
+			j++;
+		}
+		if (input[i] == ' ') {
+			output = true;
+		}
+	}
+	args[j] = '\n';
+	args[j + 1] = '\0';
+}
+
 //precise - je pokud chceš pøesnou delku - default value false
 bool input_cmp(char *first, int first_size, char *second, int second_size, bool isPrecise) {
 	int i;
