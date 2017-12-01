@@ -18,11 +18,11 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	kiv_os::TProcess_Startup_Info process_info;
 	
 	size_t written;
-	char * buf_command = new char[256];
+	char * buf_command = new char[1025];
 	bool run = true;
 
-	char * cur_path = new char[256];
-	size_t buffer_size = 256;
+	char * cur_path = new char[1025];
+	size_t buffer_size = 1025;
 	char command_part[1025];
 	char command_name[1025];
 	bool name_loaded = false;
@@ -33,12 +33,12 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	while (true) {
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
 
-		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 256), written);
+		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 1025), written);
 
 		size_t filled;
 		
-		kiv_os_rtl::Read_File(std_in, buf_command, 256, &filled);
-
+		kiv_os_rtl::Read_File(std_in, buf_command, 1025, &filled);
+		
 		char *input = buf_command;
 		
 		process_info.std_in = std_in;
@@ -87,7 +87,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		}
 
 		if (str_len(command_name) >= 2) {
-			char arg[10][1025];
+			char arg[256][1025];
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
 

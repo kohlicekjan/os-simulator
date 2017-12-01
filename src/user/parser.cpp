@@ -64,7 +64,7 @@ void parse_args (char args[][1025], int *argc, char *input, int size) {
 		}
 	}
 
-	args[arg_num][act_index] = '\0';
+	args[arg_num][act_index - 1] = '\0';
 	(*argc) = arg_num + 1 ; // +1 at vraci pocet argumentù (misto èísla nejvìtšího indexu)
 }
 
