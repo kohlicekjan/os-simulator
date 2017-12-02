@@ -132,7 +132,10 @@ void Read_File(kiv_os::TRegisters &regs) {
 	else regs.rax.r = GetLastError();
 
 	if (hnd == stdin) {
-		fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin);
+		if (fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin) == NULL) {
+			reinterpret_cast<char*>(regs.rdi.r)[0] = 26;
+		}
+		
 	}
 	
 }

@@ -50,6 +50,11 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		kiv_os::THandle pipe_out;
 
 		input_size = str_len(input);
+
+		if (input[0] == 26) {
+			break;
+		}
+
 		for (i = 0; i <= input_size; i++) {
 			if (input[i] == '|') {
 				command_part[command_argc] = '\0';
@@ -142,9 +147,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		command_argc = 0;
 		
 	}
-	kiv_os_rtl::Close_File(std_in);
-	kiv_os_rtl::Close_File(std_out);
-	kiv_os_rtl::Close_File(std_err);
+	
+
 	return 0;
 }
 
