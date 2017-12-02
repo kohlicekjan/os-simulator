@@ -129,7 +129,9 @@ bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
 
 bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
 	size_t pid = regs.rax.r;
+	kiv_os::THandle hnd = regs.rdx.r;
 	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scWait_For);
-	regs.rdx.r = pid;
+	regs.rcx.r = pid;
+	regs.rdx.r = hnd;
 	return Do_SysCall(regs);
 }

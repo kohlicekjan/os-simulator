@@ -151,6 +151,13 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
 				process_info.arg = command_part;
 				if (kiv_os_rtl::Create_Process(regs) == true) {
+					//aby cekal na ctrl+z na stdin
+					if (input_cmp(command_name, str_len(command_name), "rgen", str_len("rgen"))) {
+						regs.rdx.r = std_in;
+					}
+					else {
+						regs.rdx.r = 0;
+					}
 					kiv_os_rtl::Wait_For(regs);
 				}
 				

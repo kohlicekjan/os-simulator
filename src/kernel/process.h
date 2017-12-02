@@ -29,7 +29,7 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char *arg, bool stdinIsConso
 
 HRESULT joinProcess(int pid);
 
-void Wait_For(int pid);
+void Wait_For(int pid, kiv_os::THandle std_in);
 
 kiv_os::THandle Get_PCB();
 

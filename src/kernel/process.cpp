@@ -4,8 +4,8 @@
 #include "file_system.h"
 #include "file_descriptor.h"
 #include "handles.h"
+#include "io.h"
 #include <string.h>
-#include <stdio.h>
 
 #include <chrono>
 
@@ -20,7 +20,7 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 			break;
 		}
 		case kiv_os::scWait_For: {
-			Wait_For(regs.rdx.r);
+			Wait_For(regs.rcx.r, regs.rdx.r);
 			break;
 		}
 	}
@@ -153,9 +153,18 @@ HRESULT joinProcess(int pid) {
 	return S_OK;
 }
 
-void Wait_For(int pid) {
+void Wait_For(int pid, kiv_os::THandle std_in) {
+	char buffer[100];
+	kiv_os::TRegisters regs;
+	regs.rdx.x = std_in;
+	regs.rcx.r = 100;
+	regs.rdi.r = reinterpret_cast<decltype(regs.rdi.r)>(buffer);
 	while (process_table[pid] != nullptr) {
-		//at si taky odpocine
+		Read_File(regs);
+		if (buffer[0] == 26) {
+			joinProcess(pid);
+			return;
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
