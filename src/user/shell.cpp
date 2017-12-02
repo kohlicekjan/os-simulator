@@ -131,15 +131,20 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			//TADY DODELAT DIR
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
 				char buffer[100];
+				kiv_os::THandle dir;
 				written = 0;
 				if (argc == 2) {
-					kiv_os_rtl::Set_Current_Directory(arg[1]);
+					dir = kiv_os_rtl::Create_File(arg[1], 4);
+				}
+				else {
+					kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
+					dir = kiv_os_rtl::Create_File(cur_path, 4);
 				}
 
 				//potreba vratit handle na slozku
-				kiv_os::THandle dir = kiv_os_rtl::Create_File(cur_path, 2);
+				
 
-				while (true) {
+			//	while (true) {
 					//precte obsah adresare
 					kiv_os_rtl::Read_File(dir, buffer, 100, &written);
 					if (written == 0) {
@@ -147,7 +152,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					}
 					//vypise na konzoli
 					kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
-				}
+			//	}
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {

@@ -62,7 +62,6 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	} else {
 		return  (f_des *)INVALID_HANDLE_VALUE;
 	}
-
 	descriptor->filename = name;
 	descriptor->file = file;
 	return descriptor;

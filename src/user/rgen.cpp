@@ -27,6 +27,7 @@ size_t __stdcall rgen(const kiv_os::TRegisters &regs) {
 		r = rand();
 		atoi(r, pom);
 		str_cat(buffer, pom);
+		
 		kiv_os_rtl::Write_File(std_out, buffer, 100, written);
 	}
 

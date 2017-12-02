@@ -179,7 +179,5 @@ kiv_os::THandle Get_PCB() {
 			write_file(proc, buffer, strlen(buffer));
 		}
 	}
-
 	return Convert_Native_Handle(read);
-
 }
