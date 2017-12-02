@@ -148,7 +148,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					//precte obsah adresare
 					kiv_os_rtl::Read_File(dir, buffer, 100, &written);
 					if (written == 0) {
-						break;
+						//break;
 					}
 					//vypise na konzoli
 					kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
