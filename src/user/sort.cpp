@@ -16,9 +16,15 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	char args[1025];
 	char *buffer = new char[100];
 	size_t written = 0;
+	bool asc = true;
 	
 	//nechcem parsovat mezery
 	parse_echo(args, arg, str_len(arg));
+
+	if (input_cmp(args, 2, "-r", 2)) {
+		asc = false;
+		parse_echo(args, args, str_len(args));
+	}
 
 	//to je tu jen proto, aby to slo otestovat
 	kiv_os::THandle neco = kiv_os_rtl::Create_File(args, 1);
@@ -32,7 +38,14 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		char words[100][1025];
 		int count_word;
 		parse_args(words, &count_word, args, str_len(args));
-		sort_asc(words, count_word);
+
+		if (asc) {
+			sort_asc(words, count_word);
+		}
+		else {
+			sort_desc(words, count_word);
+		}
+		
 		for (int i = 0; i < count_word; i++) {
 			kiv_os_rtl::Write_File(std_out, words[i], str_len(words[i]), written);
 			kiv_os_rtl::Write_File(std_out, "\n", str_len("\n"), written);
@@ -53,7 +66,13 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		}
 		
 		parse_lines(lines, file_content, written);
-		sort_asc(lines, num_lines);
+
+		if (asc) {
+			sort_asc(lines, num_lines);
+		}
+		else {
+			sort_desc(lines, num_lines);
+		}
 
 		for (int i = 0; i < num_lines; i++) {
 			kiv_os_rtl::Write_File(std_out, lines[i], str_len(lines[i]), written);
