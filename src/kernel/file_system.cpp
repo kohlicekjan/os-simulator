@@ -21,7 +21,7 @@ FSystem *create_root() {
 	root->children = {};
 	root->content = "";
 	root->filename = "C:";
-	root->filePath = "/";
+	root->filePath = "C://";
 	root->isDirectory = FS_DIRECTORY;
 	root->owner = "";
 	root->parent = nullptr;
@@ -53,7 +53,7 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 	child->children = {};
 	child->content = EOF;
 	child->filename = name;
-	child->filePath = path;
+	
 	child->isDirectory = isDirectory;
 	child->owner = "";
 
@@ -62,9 +62,24 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 		return nullptr;
 	}
 
+	
+	if (child->parent->parent == nullptr) {
+		child->filePath = child->parent->filePath;
+	}
+	else {
+		child->filePath = child->parent->filePath;
+		
+	}
+
+	if (isDirectory) {
+		child->filePath +=  name + "/";
+	}
+
+
 	if (child_exist(child->parent, name)) {
 		return nullptr;
 	}
+	
 	child->parent->children.push_back(child);
 
 	return child;

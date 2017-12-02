@@ -28,17 +28,25 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	bool name_loaded = false;
 	int command_argc = 0;
 	int input_size = 0;
-	int i;
+	int i, size = 0;
 
 	while (true) {
+		
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
-
+		size = str_len(cur_path);
+		if (size < 1025) {
+			cur_path[size++] = '>';
+			cur_path[size] = '\0';
+		}
+		else {
+			cur_path[1023] = '>';
+			cur_path[1024] = '\0';
+		}
+		
 		kiv_os_rtl::Write_File(std_out, cur_path, str_len(cur_path, 1025), written);
-
 		size_t filled;
 		
 		kiv_os_rtl::Read_File(std_in, buf_command, 1025, &filled);
-		
 		char *input = buf_command;
 		
 		process_info.std_in = std_in;
@@ -50,7 +58,6 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		kiv_os::THandle pipe_out;
 
 		input_size = str_len(input);
-
 		if (input[0] == 26) {
 			break;
 		}
@@ -90,7 +97,6 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		else {
 			command_name[i] = '\0';
 		}
-
 		if (str_len(command_name) >= 2) {
 			char arg[256][1025];
 			int argc;
@@ -116,7 +122,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
 				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 			}
-
+			
 			//vzdy pro shell udelat
 			if (input_cmp(command_name, str_len(command_name), "shell", str_len("shell"), true)) {
 				process_info.std_in = std_in;
@@ -165,12 +171,6 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		}
 
 		
-
-
-		/*
-		
-			DOPORUÈENÍ - POUŽIJ FUNKCI V PARSER.CPP PARSE_ARGS() PRO PARSOVÁNÍ ØÁDKU S ARGUMENTY
-		*/
 		
 		name_loaded = false;
 		command_argc = 0;

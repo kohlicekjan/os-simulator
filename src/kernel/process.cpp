@@ -69,8 +69,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 		process_table[pid]->path = process_table[parent_pid]->path;
 	}
 	else {
-		char* path = (char *)get_root()->filename.c_str();
-		strcat_s(path, strlen(path) + strlen(get_root()->filePath.c_str()) + 1, get_root()->filePath.c_str());
+		char* path = (char *)get_root()->filePath.c_str();
 		
 		process_table[pid]->path = path;
 	}

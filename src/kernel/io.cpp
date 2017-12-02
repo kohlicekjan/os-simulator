@@ -67,7 +67,6 @@ void HandleIO(kiv_os::TRegisters &regs) {
 			Set_Current_Directory(regs);
 		}
 			break;
-
 		case kiv_os::scCreate_Pipe: {
 				Create_Pipe(regs);
 
@@ -199,6 +198,7 @@ void Get_Current_Directory(kiv_os::TRegisters &regs) {
 void Set_Current_Directory(kiv_os::TRegisters &regs) {
 	int i, j = 0;
 	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
+
 	for (i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread.get_id()) {
 			set_actual_node(find_child(buffer));
@@ -209,13 +209,13 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 
 	if (i == PCB_SIZE) {
 		FSystem *node = find_child(buffer);
-		if(node != nullptr){
+		if(node != nullptr){			
 			set_actual_node(node);
+			process_table[0]->path = actual_node()->filePath.c_str();
 		}
 		else {
 			printf("Directory '%s' doesn't exists.\n", buffer);
 		}
-		process_table[0]->path = actual_node()->filePath.c_str();
 		
 	}
 
