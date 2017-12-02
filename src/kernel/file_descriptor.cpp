@@ -188,8 +188,13 @@ HRESULT close_file(f_des *des) {
 
 HRESULT remove_file(f_des *des) {
 	if (des != nullptr) {
-		delete_child(des->file); //TODO: otestovat zda se zaznam aktualizuje
-		delete (des);
+		if (delete_child(des->file)) {
+			delete (des);
+		}
+		else {
+			return E_ACCESSDENIED;
+		}
+		
 	}
 	return S_OK;
 }

@@ -133,7 +133,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				char buffer[100];
 				written = 0;
 				if (argc == 2) {
-					//zmena adresare
+					kiv_os_rtl::Set_Current_Directory(arg[1]);
 				}
 
 				//potreba vratit handle na slozku

@@ -29,6 +29,6 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory);
 FSystem *actual_node();
 FSystem *find_child(std::string path, bool hasLock = false);
 int delete_child(FSystem *node);
-void delete_subdirs(FSystem *dir);
+bool delete_subdirs(FSystem *dir);
 bool child_exist(FSystem *parent, std::string newChild);
 void set_actual_node(FSystem *node);

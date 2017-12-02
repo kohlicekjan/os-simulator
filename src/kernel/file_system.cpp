@@ -80,6 +80,13 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 		return nullptr;
 	}
 	
+	//naplneni obsahu slozky
+	if (isDirectory) {
+		child->parent->content += "+" + name + "\n";
+	}
+	else {
+		child->parent->content += " " + name + "\n";
+	}
 	child->parent->children.push_back(child);
 
 	return child;
@@ -111,23 +118,36 @@ int delete_child(FSystem *node) {
 	if (node == nullptr || node->parent == nullptr) {
 		return 1; //node wasnt found
 	}
+	node->parent->content = "";
 
 	for (childIt = node->parent->children.begin(); childIt != node->parent->children.end(); childIt++) {
 		if ((*childIt)->filename.compare(node->filename) == 0) {
 			node->parent->children.erase(childIt);
 			break;
 		}
+		else {
+			if ((*childIt)->isDirectory) {
+				node->parent->content += "+" + (*childIt)->filename + "\n";
+			}
+			else {
+				node->parent->content += " " + (*childIt)->filename + "\n";
+			}
+		}
+
 	}
 
 	delete_subdirs(node);
+
 	return 2;
 }
 
 /// <summary> function for deleting subdirs - is called from function deleteChild
 /// <param name='dir'>node to delete</param>
 /// </summary>  
-void delete_subdirs(FSystem *dir) {
+bool delete_subdirs(FSystem *dir) {
 	std::vector<FSystem *>::iterator childIt;
+	FSystem *parent = dir->parent;
+
 	for (childIt = dir->children.begin(); childIt != dir->children.end(); childIt++) {
 		if ((*childIt)->isDirectory) {
 			delete_subdirs((*childIt));
@@ -137,32 +157,10 @@ void delete_subdirs(FSystem *dir) {
 		}
 	}
 
+	
 
 	delete(dir);
-}
-
-/// <summary> function for deleting subdirs - is called from function deleteChild
-/// <param name='dir'>node to delete</param>
-/// </summary> 
-void get_data(FSystem *file, size_t startPosition, size_t size, char** buffer, size_t *filled) {
-	// TODO: need to be filled
-}
-
-/// <summary> function for deleting subdirs - is called from function deleteChild
-/// <param name='dir'>node to delete</param>
-/// </summary> 
-void set_data(FSystem *file, char* buffer, size_t write) {
-/*	if (file->isDirectory) {
-		return;
-	}
-	//TODO: need to be tested 
-
-	std::string tw("");
-	for (size_t w = 0; w < write; w++) {
-		tw += buffer[w];
-	}
-
-	file->content.append(tw);-*/
+	return true;
 }
 
 
