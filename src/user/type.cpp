@@ -21,8 +21,8 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 	parse_echo(args, arg, str_len(arg));
 
 	//to je tu jen proto, aby to slo otestovat
-	kiv_os::THandle neco = kiv_os_rtl::Create_File(args, 1);
-	kiv_os_rtl::Write_File(neco, "blablablabla", str_len("blablablabla"), written);
+	/*kiv_os::THandle neco = kiv_os_rtl::Create_File(args, 1);
+	kiv_os_rtl::Write_File(neco, "blablablabla", str_len("blablablabla"), written);*/
 
 	//zkusi otevrit soubor
 	kiv_os::THandle file = kiv_os_rtl::Create_File(args, 5);

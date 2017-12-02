@@ -96,6 +96,27 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
 
+			if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
+				process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+			}
+			else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
+				process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+			}
+			if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
+				process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+			}
+			else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
+				process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+			}
+
 			//vzdy pro shell udelat
 			if (input_cmp(command_name, str_len(command_name), "shell", str_len("shell"), true)) {
 				process_info.std_in = std_in;
