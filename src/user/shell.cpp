@@ -122,6 +122,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				process_info.std_in = std_in;
 			}
 
+			//TADY DODELAT DIR
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
 				char buffer[100];
 				written = 0;
