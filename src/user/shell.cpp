@@ -88,6 +88,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 				kiv_os_rtl::Create_Process(regs);
 				kiv_os_rtl::Wait_For(regs);
+				
 				command_argc = 0;
 				name_loaded = false;
 				i++; // preskoci mezeru za |

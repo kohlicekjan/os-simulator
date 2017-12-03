@@ -23,14 +23,16 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	kiv_os::THandle file = kiv_os::erInvalid_Handle;
 	
 	parse_args(args, &argc, arg, str_len(arg));
-
+	if (args[argc - 1][0] == 0) {
+		argc--;
+	}
 	//nechcem parsovat mezery
 	parse_echo(command, arg, str_len(arg));
 	if (input_cmp(command, 2, "-r", 2)) {
 		asc = false;
 		parse_echo(command, command, str_len(command));
 	}
-
+	
 	if (argc >= 2 && asc == true) {
 		file = kiv_os_rtl::Create_File(args[argc - 1], 5);
 	}
@@ -82,7 +84,6 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 			kiv_os_rtl::Write_File(std_out, lines[i], str_len(lines[i]), written);
 		}
 	}
-
 	
 	return 0;
 }
