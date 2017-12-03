@@ -72,8 +72,11 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 		for (i = 0; i <= input_size; i++) {
 			if (input[i] == '|') {
+				char arg[256][1025];
+				int argc;
 				command_part[command_argc] = '\0';
 				process_info.arg = command_part;
+				parse_args(arg, &argc, command_part, str_len(command_part));
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
 				kiv_os::THandle* pipe = kiv_os_rtl::Create_Pipe(pipe_in[pipe_count], pipe_out[pipe_count], pipe_count);
 				pipe_in[pipe_count] = pipe[0];
@@ -86,7 +89,13 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				}
 				pipe_count++;
 				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
-				kiv_os_rtl::Create_Process(regs);
+
+				if (input_cmp(command_name, 3, "dir", str_len("dir"), true)) {
+					dir(arg, argc, cur_path, process_info, buffer_size);
+				}
+				else {
+					kiv_os_rtl::Create_Process(regs);
+				}	
 				kiv_os_rtl::Wait_For(regs);
 				
 				command_argc = 0;
@@ -150,53 +159,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				process_info.std_in = std_in;
 			}
 
-			//TADY DODELAT DIR
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
-				char buffer[1025];
-				kiv_os::THandle dir;
-				written = 0;
-				int dirs = 0;
-				int files = 0;
-				char pom[10];
-				str_cpy(buffer, " Directory of ", str_len(" Directory of "));
-				if (argc == 2) {
-					dir = kiv_os_rtl::Create_File(arg[1], 4);
-					str_cat(buffer, arg[1]);
-					
-				}
-				else {
-					kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
-					dir = kiv_os_rtl::Create_File(cur_path, 4);
-					str_cat(buffer, cur_path);
-				}
-
-				str_cat(buffer, ":\n\n");
-
-				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
-
-				//precte obsah adresare
-				kiv_os_rtl::Read_File(dir, buffer, 1025, &written);
-
-				for (int i = 0; i < str_len(buffer); i++) {
-					if (buffer[i] == '<' && buffer[i + 1] == 'D') {
-						dirs++;
-					}
-					if (buffer[i] == '<' && buffer[i + 1] == 'F') {
-						files++;
-					}
-				}
-					
-				//vypise na konzoli
-				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
-
-				str_cpy(buffer, "\n\t", str_len("\n\t"));
-				str_cat(buffer, atoi(files, pom));
-				str_cat(buffer, " File(s)\n\t");
-				str_cat(buffer, atoi(dirs, pom));
-				str_cat(buffer, " Dir(s)\n");
-
-				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
-				
+				dir(arg, argc, cur_path, process_info, buffer_size);
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
@@ -222,18 +186,64 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						kiv_os_rtl::Close_File(pipe_in[i]);
 						kiv_os_rtl::Close_File(pipe_out[i]);
 					}
-				}
-				
+				}			
 			}
 		}
 
-		
-		
 		name_loaded = false;
-		command_argc = 0;
-		
+		command_argc = 0;		
 	}
-	
 
 	return 0;
+}
+
+
+void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startup_Info process_info, size_t buffer_size) {
+	char buffer[1025];
+	kiv_os::THandle dir_hnd;
+	size_t written = 0;
+	int dirs = 0;
+	int files = 0;
+	char pom[10];
+	str_cpy(buffer, " Directory of ", str_len(" Directory of "));
+	if (arg[argc - 1][0] == 0) {
+		argc--;
+	}
+	if (argc == 2) {
+		dir_hnd = kiv_os_rtl::Create_File(arg[1], 4);
+		str_cat(buffer, arg[1]);
+
+	}
+	else {
+		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
+		dir_hnd = kiv_os_rtl::Create_File(cur_path, 4);
+		str_cat(buffer, cur_path);
+	}
+	
+	str_cat(buffer, ":\n\n");
+
+	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+
+	//precte obsah adresare
+	kiv_os_rtl::Read_File(dir_hnd, buffer, 1025, &written);
+
+	for (int i = 0; i < str_len(buffer); i++) {
+		if (buffer[i] == '<' && buffer[i + 1] == 'D') {
+			dirs++;
+		}
+		if (buffer[i] == '<' && buffer[i + 1] == 'F') {
+			files++;
+		}
+	}
+
+	//vypise na konzoli
+	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+
+	str_cpy(buffer, "\n\t", str_len("\n\t"));
+	str_cat(buffer, atoi(files, pom));
+	str_cat(buffer, " File(s)\n\t");
+	str_cat(buffer, atoi(dirs, pom));
+	str_cat(buffer, " Dir(s)\n");
+
+	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 }
