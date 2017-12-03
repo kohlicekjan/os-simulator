@@ -20,6 +20,7 @@ kiv_os::TRegisters Prepare_SysCall_Context(uint8_t major, uint8_t minor) {
 
 bool Do_SysCall(kiv_os::TRegisters &regs) {
 	Sys_Call(regs);
+
 	if (regs.flags.carry) Last_Error = regs.rax.r;
 		else Last_Error = kiv_os::erSuccess;
 

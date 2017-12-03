@@ -89,6 +89,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 		result = open_file((char*)regs.rdx.r, false, regs.rcx.h);
 	}
 
+
 	//print_file_system();
 
 	// TO DO: pøedìlat na file descriptor
@@ -101,6 +102,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 	}
 	else {
 		regs.rax.r = kiv_os::erInvalid_Handle;
+		
 	}
 }
 

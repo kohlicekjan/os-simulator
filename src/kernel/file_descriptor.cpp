@@ -14,6 +14,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	
 	std::string name = split_string(path).back();
 	FSystem *file = find_child(path);
+	
 	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
