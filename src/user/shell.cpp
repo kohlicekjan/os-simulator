@@ -164,7 +164,13 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
-				kiv_os_rtl::Set_Current_Directory(arg[1]);
+				if (!kiv_os_rtl::Set_Current_Directory(arg[1])) {
+					char buffer[100];
+					str_cpy(buffer, "Directory '", str_len("Directory "));
+					str_cat(buffer, arg[1]);
+					str_cat(buffer, "' doesn't found!\n");
+					kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+				}
 			}
 			else {
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
