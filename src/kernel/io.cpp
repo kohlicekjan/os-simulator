@@ -128,7 +128,6 @@ void Read_File(kiv_os::TRegisters &regs) {
 	//if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
 	if (!regs.flags.carry) {
 		regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), reinterpret_cast<f_des*>(hnd)->act_pos, regs.rcx.r, read);
-		
 	}
 	if (!regs.flags.carry) regs.rax.r = read;
 	else regs.rax.r = GetLastError();

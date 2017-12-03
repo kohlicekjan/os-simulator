@@ -3,6 +3,8 @@
 #include "rtl.h"
 #include "parser.h"
 
+#include <stdio.h>
+
 size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	//systemove volani do jadra
 	
@@ -21,8 +23,8 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 	kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 
 	while(true){
-		
 		kiv_os_rtl::Read_File(std_in, buffer, 100, &written);
+		
 		if (written == 0) {
 			break;
 		}
