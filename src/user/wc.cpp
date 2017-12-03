@@ -25,10 +25,6 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 
 	parse_args(args, &argc, arg, str_len(arg));
 
-	// na testovani
-	kiv_os::THandle neco = kiv_os_rtl::Create_File(args[argc - 1], 1);
-	kiv_os_rtl::Write_File(neco, "bla bla\nbl  abla", str_len("bla bla\nbl  abla"), written);
-
 	kiv_os::THandle file = kiv_os_rtl::Create_File(args[argc - 1], 5);
 
 	//vypis error

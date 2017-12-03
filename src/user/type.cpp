@@ -13,19 +13,18 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_out = process_info->std_out;
 	kiv_os::THandle std_err = process_info->std_err;
 
+	char file_name[2][1025];
+	int argc;
 	char args[1025];
 	char *buffer = new char[100];
 	size_t written = 0;
 
+	parse_args(file_name, &argc, arg, str_len(arg));
+	//zkusi otevrit soubor
+	kiv_os::THandle file = kiv_os_rtl::Create_File(file_name[argc - 1], 5);
+
 	//nechcem parsovat mezery
 	parse_echo(args, arg, str_len(arg));
-
-	//to je tu jen proto, aby to slo otestovat
-	/*kiv_os::THandle neco = kiv_os_rtl::Create_File(args, 1);
-	kiv_os_rtl::Write_File(neco, "blablablabla", str_len("blablablabla"), written);*/
-
-	//zkusi otevrit soubor
-	kiv_os::THandle file = kiv_os_rtl::Create_File(args, 5);
 	
 	//invalid handle == vypis stdin
 	if (file == kiv_os::erInvalid_Handle) {

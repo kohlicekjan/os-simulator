@@ -18,7 +18,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
-			//file->content = EOF;
+			file->content = EOF;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);

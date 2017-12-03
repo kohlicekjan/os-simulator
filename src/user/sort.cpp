@@ -3,41 +3,38 @@
 #include "rtl.h"
 #include "parser.h"
 
-
 size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
-
+	
 	char *arg = process_info->arg;
 
 	kiv_os::THandle std_in = process_info->std_in;
 	kiv_os::THandle std_out = process_info->std_out;
 	kiv_os::THandle std_err = process_info->std_err;
 
-	char args[1025];
+	char command[1025];
+	char args[100][1025];
+	int argc = 0;
 	char *buffer = new char[100];
 	size_t written = 0;
 	bool asc = true;
+
+	parse_args(args, &argc, arg, str_len(arg));
+
+	kiv_os::THandle file = kiv_os_rtl::Create_File(args[argc - 1], 5);
 	
 	//nechcem parsovat mezery
-	parse_echo(args, arg, str_len(arg));
-
-	if (input_cmp(args, 2, "-r", 2)) {
+	parse_echo(command, arg, str_len(arg));
+	
+	if (input_cmp(command, 2, "-r", 2)) {
 		asc = false;
-		parse_echo(args, args, str_len(args));
+		parse_echo(command, command, str_len(command));
 	}
-
-	//to je tu jen proto, aby to slo otestovat
-	kiv_os::THandle neco = kiv_os_rtl::Create_File(args, 1);
-	kiv_os_rtl::Write_File(neco, "bl\nab\nla\nbl\nabl\na", str_len("bl\nab\nla\nbl\nabl\na"), written);
-
-	//zkusi otevrit soubor
-	kiv_os::THandle file = kiv_os_rtl::Create_File(args, 5);
-
-	//invalid handle == vypis stdin
+	
 	if (file == kiv_os::erInvalid_Handle) {
 		char words[100][1025];
 		int count_word;
-		parse_args(words, &count_word, args, str_len(args));
+		parse_args(words, &count_word, command, str_len(command));
 
 		if (asc) {
 			sort_asc(words, count_word);
@@ -54,10 +51,10 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	}
 	else if(file != kiv_os::erInvalid_Handle){
 		
-		//precte 900kB soubor
-		char file_content[900000];
+		//precte 100kB soubor
+		char file_content[100000];
 		//vypis file
-		kiv_os_rtl::Read_File(file, file_content, 900000, &written);
+		kiv_os_rtl::Read_File(file, file_content, 100000, &written);
 		int num_lines = count_lines(file_content, written);
 
 		char** lines = new char*[num_lines];
@@ -79,7 +76,7 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		}
 	}
 
-
+	
 	return 0;
 }
 

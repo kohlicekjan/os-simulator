@@ -110,16 +110,18 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
+					kiv_os_rtl::Delete_File(arg[argc - 1], false);
 					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 3);
-					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+					//vymazani presmerovani z argumentù pøíkazu, 2 je poèet mezer
+					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
 					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
-					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+					//vymazani presmerovani z argumentù pøíkazu, 4 je poèet mezer
+					command_part[str_len(command_part) - 4 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
+					kiv_os_rtl::Delete_File(arg[argc - 1], false);
 					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 3);
 					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
 					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
@@ -153,7 +155,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 				str_cat(buffer, ":\n\n");
 
-				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 
 				//precte obsah adresare
 				kiv_os_rtl::Read_File(dir, buffer, 1025, &written);
@@ -168,7 +170,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				}
 					
 				//vypise na konzoli
-				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 
 				str_cpy(buffer, "\n\t", str_len("\n\t"));
 				str_cat(buffer, atoi(files, pom));
@@ -176,7 +178,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				str_cat(buffer, atoi(dirs, pom));
 				str_cat(buffer, " Dir(s)\n");
 
-				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);		
+				kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 				
 			}
 
