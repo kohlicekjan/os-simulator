@@ -180,8 +180,8 @@ void Get_Current_Directory(kiv_os::TRegisters &regs) {
 	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
 	for (i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread_id) {
-			while (j < strlen(process_table[0]->path)) {
-				buffer[j] = process_table[0]->path[j];
+			while (j < strlen(process_table[i]->path)) {
+				buffer[j] = process_table[i]->path[j];
 				j++;
 			}
 			buffer[j] = '\0';

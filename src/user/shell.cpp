@@ -34,6 +34,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
 		size = str_len(cur_path);
+		kiv_os_rtl::Set_Current_Directory(cur_path);
 		if (size < 1025) {
 			cur_path[size++] = '>';
 			cur_path[size] = '\0';
