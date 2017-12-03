@@ -3,7 +3,6 @@
 #include "rtl.h"
 #include "parser.h"
 
-#include "stdio.h"
 size_t __stdcall rgen(kiv_os::TRegisters &regs) {
 
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);

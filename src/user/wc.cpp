@@ -3,6 +3,7 @@
 #include "rtl.h"
 #include "parser.h"
 
+#include <stdio.h>
 
 size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
@@ -14,7 +15,7 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_err = process_info->std_err;
 
 	char args[3][1025];
-	int argc;
+	int argc, real_argc;
 	char *buffer = new char[100];
 	size_t written = 0;
 
@@ -22,10 +23,28 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 	int words = 1;
 	int chars = 0;
 	char *pom = new char[10];
+	kiv_os::THandle file;
 
 	parse_args(args, &argc, arg, str_len(arg));
+	real_argc = argc;
+	if (args[argc - 1][0] == 0) {
+		real_argc = argc - 1;
+	}
 
-	kiv_os::THandle file = kiv_os_rtl::Create_File(args[argc - 1], 5);
+	//kdyz je na konci pipy
+	if (argc == 1)argc = 2;
+	//z pipy
+	if (input_cmp(args[real_argc - 1], str_len(args[real_argc - 1]), "wc", 2) ||
+		input_cmp(args[real_argc - 1], str_len(args[real_argc - 1]), "-l", 2) ||
+		input_cmp(args[real_argc - 1], str_len(args[real_argc - 1]), "-w", 2) ||
+		input_cmp(args[real_argc - 1], str_len(args[real_argc - 1]), "-c", 2)) {
+		
+		file = std_in;
+	}
+	else {
+		//zkusi otevrit soubor
+		file = kiv_os_rtl::Create_File(args[argc - 1], 5);
+	}
 
 	//vypis error
 	if (file == kiv_os::erInvalid_Handle) {

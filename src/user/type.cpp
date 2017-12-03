@@ -18,10 +18,20 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 	char args[1025];
 	char *buffer = new char[100];
 	size_t written = 0;
-
+	kiv_os::THandle file;
 	parse_args(file_name, &argc, arg, str_len(arg));
-	//zkusi otevrit soubor
-	kiv_os::THandle file = kiv_os_rtl::Create_File(file_name[argc - 1], 5);
+	if (file_name[argc - 1][0] == 0) {
+		argc--;
+	}
+
+	//z pipy
+	if (argc == 1) {
+		file = std_in;
+	}
+	else {
+		//zkusi otevrit soubor
+		file = kiv_os_rtl::Create_File(file_name[argc - 1], 5);
+	}
 
 	//nechcem parsovat mezery
 	parse_echo(args, arg, str_len(arg));
