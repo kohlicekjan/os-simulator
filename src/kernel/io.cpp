@@ -110,7 +110,7 @@ void Write_File(kiv_os::TRegisters &regs) {
 	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
 //	if (!regs.flags.carry) regs.flags.carry = !WriteFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &written, NULL);
 	if (!regs.flags.carry) {
-		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));
+		regs.flags.carry = write_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), static_cast<char>(regs.rcx.r));	
 		written = static_cast<char>(regs.rcx.r);
 		if(hnd == stdout)
 			fwrite(reinterpret_cast<char*>(regs.rdi.r), sizeof(char), regs.rcx.r, (FILE*)hnd);
@@ -224,7 +224,10 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 }
 
 void Create_Pipe(kiv_os::TRegisters &regs) {
-	pipe *pipe = create_pipe();
-	pipes_read.push_back(pipe);
-	pipes_write.push_back(pipe);
+	HANDLE in, out;
+	in = open_file("C://system/pipe" + std::to_string(regs.rdi.r), false, WRITE);
+	out = open_file("C://system/pipe" + std::to_string(regs.rdi.r), false, READ);
+	
+	regs.rcx.x = Convert_Native_Handle(in);
+	regs.rdx.x = Convert_Native_Handle(out);
 }

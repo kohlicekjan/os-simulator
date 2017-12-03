@@ -44,7 +44,6 @@ bool kiv_os_rtl::Write_File(const kiv_os::THandle file_handle, const void *buffe
 	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_handle);
 	regs.rdi.r = reinterpret_cast<decltype(regs.rdi.r)>(buffer);
 	regs.rcx.r = buffer_size;	
-
 	const bool result = Do_SysCall(regs);
 	written = regs.rax.r;
 	return result;
@@ -110,11 +109,18 @@ bool kiv_os_rtl::Set_Current_Directory(const char * buffer) {
 	return Do_SysCall(regs);
 }
 
-bool kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out) {
+kiv_os::THandle* kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out, int count) {
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_Pipe);
 	regs.rcx.x = static_cast<decltype(regs.rcx.x)>(file_in);
 	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_out);
-	return Do_SysCall(regs);
+	regs.rdi.r = count;
+	Do_SysCall(regs);
+	
+	kiv_os::THandle pipe[2];
+	pipe[0] = static_cast<kiv_os::THandle>(regs.rcx.x);
+	pipe[1] = static_cast<kiv_os::THandle>(regs.rdx.x);
+
+	return pipe;
 }
 
 bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {

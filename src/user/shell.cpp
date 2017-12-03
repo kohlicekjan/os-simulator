@@ -54,8 +54,16 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		process_info.std_err = std_err;
 		regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 
-		kiv_os::THandle pipe_in;
-		kiv_os::THandle pipe_out;
+		int pipe_count = 0;
+		for (int i = 0; i <= input_size; i++) {
+			if (input[i] == '|' && input[i - 1] == ' ' && input[i + 1] == ' ') {
+				pipe_count++;
+			}
+		}
+		
+		kiv_os::THandle* pipe_in = new kiv_os::THandle[pipe_count];
+		kiv_os::THandle* pipe_out = new kiv_os::THandle[pipe_count];
+		pipe_count = 0;
 
 		input_size = str_len(input);
 		if (input[0] == 26) {
@@ -67,11 +75,19 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				command_part[command_argc] = '\0';
 				process_info.arg = command_part;
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
-
-				kiv_os_rtl::Create_Process(regs);
-
-			//	kiv_os_rtl::Create_Pipe(process_info.std_in, process_info.std_out);
+				kiv_os::THandle* pipe = kiv_os_rtl::Create_Pipe(pipe_in[pipe_count], pipe_out[pipe_count], pipe_count);
+				pipe_in[pipe_count] = pipe[0];
+				pipe_out[pipe_count] = pipe[1];
 				
+				process_info.std_out = pipe_in[pipe_count];
+
+				if (pipe_count != 0) {
+					process_info.std_in = pipe_out[pipe_count - 1];
+				}
+				pipe_count++;
+				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
+				kiv_os_rtl::Create_Process(regs);
+				kiv_os_rtl::Wait_For(regs);
 				command_argc = 0;
 				name_loaded = false;
 				i++; // preskoci mezeru za |
@@ -102,7 +118,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			char arg[256][1025];
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
-
+			process_info.std_out = std_out;
 			if(argc >= 3){
 				if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
 					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
@@ -188,6 +204,10 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			else {
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
 				process_info.arg = command_part;
+				if (pipe_count != 0) {
+					process_info.std_in = pipe_out[pipe_count - 1];
+				}
+				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 				if (kiv_os_rtl::Create_Process(regs) == true) {
 					//aby cekal na ctrl+z na stdin
 					if (input_cmp(command_name, str_len(command_name), "rgen", str_len("rgen"))) {
@@ -197,6 +217,10 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						regs.rdx.r = 0;
 					}
 					kiv_os_rtl::Wait_For(regs);
+					for (int i = 0; i < pipe_count; i++) {
+						kiv_os_rtl::Close_File(pipe_in[i]);
+						kiv_os_rtl::Close_File(pipe_out[i]);
+					}
 				}
 				
 			}

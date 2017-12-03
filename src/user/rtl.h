@@ -31,7 +31,7 @@ namespace kiv_os_rtl {
 
 	bool Set_Current_Directory(const char * buffer);
 
-	bool Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out);
+	kiv_os::THandle* Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out, int count);
 
 	bool Create_Process(kiv_os::TRegisters &regs);
 

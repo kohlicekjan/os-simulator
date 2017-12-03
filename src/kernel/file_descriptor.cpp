@@ -14,7 +14,6 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	
 	std::string name = split_string(path).back();
 	FSystem *file = find_child(path);
-
 	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
@@ -138,8 +137,9 @@ char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size
 }
 
 //zapisuje na konec souboru
-HRESULT write_file(f_des *des, char *to_write, char size_to_write) {
+HRESULT write_file(f_des *des, char *to_write, char size_to_write) {	
 	if (!des->writing) {
+		
 		return E_INVALIDARG;
 	}
 	
@@ -147,7 +147,6 @@ HRESULT write_file(f_des *des, char *to_write, char size_to_write) {
 	if (des->file->isDirectory) {
 		return E_INVALIDARG;
 	}
-	
 	des->file->content.pop_back();
 	des->file->content.append(to_write);
 	des->file->content.push_back(EOF);

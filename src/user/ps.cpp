@@ -24,7 +24,6 @@ size_t __stdcall ps(kiv_os::TRegisters &regs) {
 
 	while(true){
 		kiv_os_rtl::Read_File(std_in, buffer, 100, &written);
-		
 		if (written == 0) {
 			break;
 		}

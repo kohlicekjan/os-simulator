@@ -41,6 +41,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	int pid = -1;
 	int parent_pid = -1;
 	std::vector<kiv_os::THandle> descriptors;
+	
 	//descriptory
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_in));
 	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_out));
@@ -58,7 +59,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 			}
 		}
 	}
-
+	
 	//kdyz neni misto pro dalsi proces, vrati false
 	if (pid == -1) {
 		return S_FALSE;
@@ -72,6 +73,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 			}
 		}
 	}
+	
 	
 	process_table[pid]->name = name;
 	process_table[pid]->par_pid = parent_pid;	
@@ -91,9 +93,9 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	
 	//najde vstupni pod noveho procesu
 	kiv_os::TEntry_Point func = (kiv_os::TEntry_Point)GetProcAddress(User_Programs, name);
-	
 	//vstupni bod se nepovedlo nalezt 
 	if (!func) {
+		
 		std::lock_guard<std::mutex> lock(pcb_mutex);
 		delete process_table[pid];
 		process_table[pid] = nullptr;
@@ -123,12 +125,11 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	process_info.std_in = process_table[pid]->descriptors.at(0);
 	process_info.std_out = process_table[pid]->descriptors.at(1);
 	process_info.std_err = process_table[pid]->descriptors.at(2);
-
+	
 	if (memcmp(arg, "ps", 2) == 0) {
 		process_info.std_in = Get_PCB();
 	}
 	
-
 	//ulozeni hodnot do registru
 	regs.rcx.r = (decltype(regs.rcx.r))pid;
 	regs.rdx.r = (decltype(regs.rdx.r))&process_info;
@@ -192,11 +193,13 @@ kiv_os::THandle Get_PCB() {
 	char buffer[100];
 	f_des* proc = open_file("C://system/proc/ps");
 	f_des* read = open_file("C://system/proc/ps", false, READ);
+	
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr) {
 			//memset(buffer, ' ', 100);
 			sprintf_s(buffer, 100, "%d\t %d\t %s \t\t %s\n", i, process_table[i]->thread_id, process_table[i]->name, process_table[i]->path);
 			write_file(proc, buffer, strlen(buffer));
+			
 		}
 	}
 	return Convert_Native_Handle(read);

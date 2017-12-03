@@ -3,6 +3,8 @@
 #include "rtl.h"
 #include "parser.h"
 
+#include <stdio.h>
+
 size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
 	
@@ -18,18 +20,24 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	char *buffer = new char[100];
 	size_t written = 0;
 	bool asc = true;
-
+	kiv_os::THandle file = kiv_os::erInvalid_Handle;
+	
 	parse_args(args, &argc, arg, str_len(arg));
 
-	kiv_os::THandle file = kiv_os_rtl::Create_File(args[argc - 1], 5);
-	
 	//nechcem parsovat mezery
 	parse_echo(command, arg, str_len(arg));
-	
 	if (input_cmp(command, 2, "-r", 2)) {
 		asc = false;
 		parse_echo(command, command, str_len(command));
 	}
+
+	if (argc >= 2 && asc == true) {
+		file = kiv_os_rtl::Create_File(args[argc - 1], 5);
+	}
+	if (argc == 1 || (asc == false  && argc == 2)) {
+		file = std_in;
+	}
+	
 	
 	if (file == kiv_os::erInvalid_Handle) {
 		char words[100][1025];
@@ -56,7 +64,6 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		//vypis file
 		kiv_os_rtl::Read_File(file, file_content, 100000, &written);
 		int num_lines = count_lines(file_content, written);
-
 		char** lines = new char*[num_lines];
 		for (int i = 0; i < num_lines; i++) {
 			lines[i] = new char[1025];
@@ -70,7 +77,7 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		else {
 			sort_desc(lines, num_lines);
 		}
-
+		
 		for (int i = 0; i < num_lines; i++) {
 			kiv_os_rtl::Write_File(std_out, lines[i], str_len(lines[i]), written);
 		}
