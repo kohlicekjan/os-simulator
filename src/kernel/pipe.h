@@ -3,20 +3,14 @@
 
 #include <queue>
 #include <Windows.h>
+#include <vector>
 
-/*
-const int BUFFER_SIZE = 1000;
 
-typedef struct pipe {
-	const char *name;										//jmeno pipy
-	kiv_os::THandle in;										//deskriptory na vstup/vystup do pipy
-	kiv_os::THandle out;
 
-}pipe;
-
-extern char buffer[BUFFER_SIZE];
-*/
 static const int MAX_SIZE = 2048;
+static std::vector < struct pipe*> pipes_write;
+static std::vector < struct pipe*> pipes_read;
+
 typedef struct pipe {
 
 	bool closed_in;

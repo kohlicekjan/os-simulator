@@ -97,6 +97,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		else {
 			command_name[i] = '\0';
 		}
+
 		if (str_len(command_name) >= 2) {
 			char arg[256][1025];
 			int argc;
@@ -184,7 +185,4 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	
 
 	return 0;
-}
-
-void parser(char *buffer) {
 }

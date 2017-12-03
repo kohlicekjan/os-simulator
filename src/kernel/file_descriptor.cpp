@@ -118,10 +118,6 @@ char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size
 		return nullptr;
 	}
 
-	if (des->file->isDirectory) {
-		return nullptr;
-	}
-	
 	
 	//TODO: otestovat zda se hodnota nezmìní po pøedání funkci
 	if (start_pos + size_to_read < des->file->content.length()) {
@@ -136,6 +132,7 @@ char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size
 		des->act_pos = start_pos + read;
 		//kvuli mezere na konci vypisu
 		buffer[read] = '\0';
+
 		return buffer;
 	}
 }

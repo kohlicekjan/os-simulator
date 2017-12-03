@@ -8,6 +8,8 @@
 #include "file_system.h"
 #include "process.h"
 
+#include "pipe.h"
+
 
 void HandleIO(kiv_os::TRegisters &regs) {
 
@@ -222,5 +224,7 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 }
 
 void Create_Pipe(kiv_os::TRegisters &regs) {
-	
+	pipe *pipe = create_pipe();
+	pipes_read.push_back(pipe);
+	pipes_write.push_back(pipe);
 }

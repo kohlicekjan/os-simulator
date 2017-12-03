@@ -88,6 +88,7 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 		child->parent->content += " " + name + "\n";
 	}
 	child->parent->children.push_back(child);
+	
 
 	return child;
 }

@@ -2,6 +2,14 @@
 #include "../api/api.h"
 
 
+typedef struct pipe_data {
+	char output_path[1024];
+	char proces[1024];
+	bool stdin_redirect;
+	bool stdout_redirect;
+	char args[1024];
+}pipe_data;
+
 void input_parser(char *input, int input_size, kiv_os::TRegisters &regs);
 void do_command(char args[][1025], int argc);
 void str_cpy(char *destination, char *string, int size_of_string);
