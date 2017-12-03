@@ -97,7 +97,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 	regs.flags.carry = result == INVALID_HANDLE_VALUE;
 
 	if (!regs.flags.carry) {
-		regs.rax.x = Convert_Native_Handle(result); 
+		regs.rax.x = Convert_Native_Handle(result);
 	}
 	else {
 		regs.rax.r = kiv_os::erInvalid_Handle;
@@ -128,6 +128,7 @@ void Read_File(kiv_os::TRegisters &regs) {
 	//if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
 	if (!regs.flags.carry) {
 		regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), reinterpret_cast<f_des*>(hnd)->act_pos, regs.rcx.r, read);
+		
 	}
 	if (!regs.flags.carry) regs.rax.r = read;
 	else regs.rax.r = GetLastError();

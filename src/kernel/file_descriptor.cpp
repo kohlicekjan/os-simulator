@@ -18,7 +18,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
-			file->content = EOF;
+			//file->content = EOF;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
@@ -35,7 +35,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 
 	} else if (WRITE_UPDATE == mode) {
 		if (file != nullptr) {
-			file->content = EOF;
+			//file->content = EOF;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
@@ -117,7 +117,7 @@ char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size
 	if (!des->reading) {		
 		return nullptr;
 	}
-
+	//printf("%s\t%s\n", des->filename, des->file->content);
 	
 	//TODO: otestovat zda se hodnota nezmìní po pøedání funkci
 	if (start_pos + size_to_read < des->file->content.length()) {

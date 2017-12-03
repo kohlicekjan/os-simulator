@@ -108,6 +108,11 @@ bool input_cmp(char *first, int first_size, char *second, int second_size, bool 
 
 char* atoi(int value, char *str) {
 	int i = 0;
+	if (value == 0) {
+		str[0] = '0';
+		i++;
+	}
+
 	for (int max_number = 1000000000; value != 0; max_number = max_number/10) {
 		if (value / max_number >= 1 || i > 0) {
 			//asci kod 0

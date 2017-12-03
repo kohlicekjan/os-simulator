@@ -103,25 +103,27 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
 
-			if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
-				process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
-				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
-			}
-			else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
-				process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 3);
-				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
-			}
-			if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
-				process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
-				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
-			}
-			else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
-				process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 3);
-				//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
-				command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+			if(argc >= 3){
+				if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
+					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+				}
+				else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
+					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+				}
+				if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
+					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+				}
+				else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
+					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					command_part[str_len(command_part) - 3 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
+				}
 			}
 			
 			//vzdy pro shell udelat
@@ -131,29 +133,51 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 			//TADY DODELAT DIR
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
-				char buffer[100];
+				char buffer[1025];
 				kiv_os::THandle dir;
 				written = 0;
+				int dirs = 0;
+				int files = 0;
+				char pom[10];
+				str_cpy(buffer, " Directory of ", str_len(" Directory of "));
 				if (argc == 2) {
 					dir = kiv_os_rtl::Create_File(arg[1], 4);
+					str_cat(buffer, arg[1]);
+					
 				}
 				else {
 					kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
 					dir = kiv_os_rtl::Create_File(cur_path, 4);
+					str_cat(buffer, cur_path);
 				}
 
-				//potreba vratit handle na slozku
-				
+				str_cat(buffer, ":\n\n");
 
-			//	while (true) {
-					//precte obsah adresare
-					kiv_os_rtl::Read_File(dir, buffer, 100, &written);
-					if (written == 0) {
-						//break;
+				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+
+				//precte obsah adresare
+				kiv_os_rtl::Read_File(dir, buffer, 1025, &written);
+
+				for (int i = 0; i < str_len(buffer); i++) {
+					if (buffer[i] == '<' && buffer[i + 1] == 'D') {
+						dirs++;
 					}
-					//vypise na konzoli
-					kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
-			//	}
+					if (buffer[i] == '<' && buffer[i + 1] == 'F') {
+						files++;
+					}
+				}
+					
+				//vypise na konzoli
+				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+
+				str_cpy(buffer, "\n\t", str_len("\n\t"));
+				str_cat(buffer, atoi(files, pom));
+				str_cat(buffer, " File(s)\n\t");
+				str_cat(buffer, atoi(dirs, pom));
+				str_cat(buffer, " Dir(s)\n");
+
+				kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);		
+				
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {

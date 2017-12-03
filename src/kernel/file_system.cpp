@@ -82,10 +82,10 @@ FSystem *create_child(std::string path, std::string name, bool isDirectory) {
 	
 	//naplneni obsahu slozky
 	if (isDirectory) {
-		child->parent->content += "+" + name + "\n";
+		child->parent->content += "\t<DIR>\t" + name + "\n";
 	}
 	else {
-		child->parent->content += " " + name + "\n";
+		child->parent->content += "\t<FILE>\t" + name  + "\n";
 	}
 	child->parent->children.push_back(child);
 	
