@@ -20,7 +20,18 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 			break;
 		}
 		case kiv_os::scWait_For: {
-			Wait_For(regs.rcx.r, regs.rdx.r);
+			if (regs.rcx.h != 0) {
+				Wait_For(regs.rcx.h, regs.rdx.r);
+			}
+			else {
+				if (process_table[regs.rcx.l] == nullptr) {
+					regs.rax.r = kiv_os::erInvalid_Handle;
+					regs.flags.carry = 1;
+					return;
+				}
+				Wait_For(regs.rdx.r);
+			}
+			
 			break;
 		}
 	}
@@ -92,7 +103,7 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 
 	// u prvniho shellu nechceme vytvaret dalsi vlakno - to prvni by skoncilo a zustal by sirotek :(
 	if(pid != 0){
-		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg , false);
+		process_table[pid]->thread = std::thread(runProcess, func, pid, arg->arg, false);
 	}
 	else {
 		process_table[pid]->thread_id = std::this_thread::get_id();
@@ -129,18 +140,22 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 		exit(0);
 	}
 
+	
 	{
 		std::lock_guard<std::mutex> lock(pcb_mutex);
-		process_table[pid]->thread.detach();
-		//smazani zaznamu o procesu
-		delete process_table[pid];
-		process_table[pid] = nullptr;
+		if(process_table[pid] != nullptr){
+			process_table[pid]->thread.detach();
+			//smazani zaznamu o procesu
+			delete process_table[pid];
+			process_table[pid] = nullptr;
+		}
+		
 	}
 	
 }
 
 HRESULT joinProcess(int pid) {
-	std::thread::id tid = process_table[pid]->thread.get_id();
+	std::thread::id tid = process_table[pid]->thread_id;
 	//ukonceni procesu
 	{
 		std::lock_guard<std::mutex> lock(pcb_mutex);
@@ -148,6 +163,7 @@ HRESULT joinProcess(int pid) {
 		//smazani zaznamu o procesu
 		delete process_table[pid];
 		process_table[pid] = nullptr;
+		
 	}
 	return S_OK;
 }
@@ -166,6 +182,10 @@ void Wait_For(int pid, kiv_os::THandle std_in) {
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+}
+
+void Wait_For(int miliseconds) {
+	std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
 }
 
 kiv_os::THandle Get_PCB() {

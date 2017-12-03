@@ -31,6 +31,8 @@ HRESULT joinProcess(int pid);
 
 void Wait_For(int pid, kiv_os::THandle std_in);
 
+void Wait_For(int miliseconds);
+
 kiv_os::THandle Get_PCB();
 
 //tabulka procesu

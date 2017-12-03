@@ -179,7 +179,7 @@ void Get_Current_Directory(kiv_os::TRegisters &regs) {
 
 	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
 	for (i = 0; i < PCB_SIZE; i++) {
-		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread.get_id()) {
+		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread_id) {
 			while (j < strlen(process_table[0]->path)) {
 				buffer[j] = process_table[0]->path[j];
 				j++;
@@ -202,7 +202,7 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
 
 	for (i = 0; i < PCB_SIZE; i++) {
-		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread.get_id()) {
+		if (process_table[i] != nullptr && std::this_thread::get_id() == process_table[i]->thread_id) {
 			set_actual_node(find_child(buffer));
 			process_table[i]->path = actual_node()->filePath.c_str();
 			break;

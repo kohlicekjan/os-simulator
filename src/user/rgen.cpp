@@ -3,10 +3,11 @@
 #include "rtl.h"
 #include "parser.h"
 
-size_t __stdcall rgen(const kiv_os::TRegisters &regs) {
+#include "stdio.h"
+size_t __stdcall rgen(kiv_os::TRegisters &regs) {
 
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
-
+	int pid = regs.rcx.r;
 	char *arg = process_info->arg;
 
 	kiv_os::THandle std_in = process_info->std_in;
@@ -14,21 +15,29 @@ size_t __stdcall rgen(const kiv_os::TRegisters &regs) {
 	kiv_os::THandle std_err = process_info->std_err;
 
 	char buffer[100];
-	buffer[0] = '\0';
 	char pom[10];
 	size_t written;
 	int r;
+	bool run = true;
 
-	while(true){
-		r = rand();
+	while(run){
+		buffer[0] = '\0';
+		r = rand();		
 		atoi(r, pom);
 		str_cat(buffer, pom);
 		str_cat(buffer, ".");
 		r = rand();
 		atoi(r, pom);
 		str_cat(buffer, pom);
-		
-		kiv_os_rtl::Write_File(std_out, buffer, 100, written);
+		str_cat(buffer, " ");
+		regs.rax.r = 0;
+		regs.rcx.r = 100;
+		regs.rdi.r = pid;
+		run = kiv_os_rtl::Wait_For(regs);
+		if (run == false) {	
+			break;
+		}
+		kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 	}
 
 	return 0;
