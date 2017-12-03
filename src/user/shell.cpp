@@ -163,8 +163,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
 				dir(arg, argc, cur_path, process_info, buffer_size);
 			}
-
-			if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
+			else if (input_cmp(command_name, str_len(command_name), "cd", str_len("cd"), true) && argc == 2) {
 				if (!kiv_os_rtl::Set_Current_Directory(arg[1])) {
 					char buffer[100];
 					str_cpy(buffer, "Directory '", str_len("Directory "));
