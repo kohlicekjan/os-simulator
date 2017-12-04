@@ -226,7 +226,7 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 void Create_Pipe(kiv_os::TRegisters &regs) {
 	HANDLE in, out;
 	in = open_file("C://system/pipe" + std::to_string(regs.rdi.r), false, WRITE);
-	out = open_file("C://system/pipe" + std::to_string(regs.rdi.r), false, READ);
+	out = open_file("C://system/pipe" + std::to_string(regs.rdi.r), false, READ_UPDATE);
 	
 	regs.rcx.x = Convert_Native_Handle(in);
 	regs.rdx.x = Convert_Native_Handle(out);

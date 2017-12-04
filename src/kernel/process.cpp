@@ -16,7 +16,15 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 	switch (regs.rax.l){
 		case kiv_os::scClone: {
 			
-			regs.rax.r = (decltype(regs.rax.r))createProcess(reinterpret_cast<char *>(regs.rdx.r), reinterpret_cast<kiv_os::TProcess_Startup_Info*>(regs.rdi.r));
+			int pid = createProcess(reinterpret_cast<char *>(regs.rdx.r), reinterpret_cast<kiv_os::TProcess_Startup_Info*>(regs.rdi.r));
+			if (pid != -1) {
+				regs.rax.r = pid;
+			}
+			else {
+				regs.rax.r = kiv_os::erInvalid_Argument;
+				regs.flags.carry = 1;
+			}
+
 			break;
 		}
 		case kiv_os::scWait_For: {
@@ -37,7 +45,7 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 	}
 }
 
-HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
+int createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	int pid = -1;
 	int parent_pid = -1;
 	std::vector<kiv_os::THandle> descriptors;
@@ -60,9 +68,9 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 		}
 	}
 	
-	//kdyz neni misto pro dalsi proces, vrati false
+	//kdyz neni misto pro dalsi proces, vrati -1
 	if (pid == -1) {
-		return S_FALSE;
+		return -1;
 	}
 
 	for (int i = 0; i < PCB_SIZE; i++) {
@@ -95,12 +103,11 @@ HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	kiv_os::TEntry_Point func = (kiv_os::TEntry_Point)GetProcAddress(User_Programs, name);
 	//vstupni bod se nepovedlo nalezt 
 	if (!func) {
-		
 		std::lock_guard<std::mutex> lock(pcb_mutex);
 		delete process_table[pid];
 		process_table[pid] = nullptr;
 		SetLastError(kiv_os::erInvalid_Handle);
-		return S_FALSE;
+		return -1;
 	}
 
 	// u prvniho shellu nechceme vytvaret dalsi vlakno - to prvni by skoncilo a zustal by sirotek :(

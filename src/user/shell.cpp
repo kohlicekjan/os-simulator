@@ -95,9 +95,14 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					dir(arg, argc, cur_path, process_info, buffer_size);
 				}
 				else {
-					kiv_os_rtl::Create_Process(regs);
+					if (kiv_os_rtl::Create_Process(regs)) {
+						kiv_os_rtl::Wait_For(regs);
+					}
+					else {
+						kiv_os_rtl::Write_File(std_out, "Unknown command!\n", str_len("Unknown command!\n"), written);
+					}
 				}	
-				kiv_os_rtl::Wait_For(regs);
+				
 				
 				command_argc = 0;
 				name_loaded = false;
@@ -207,7 +212,10 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						kiv_os_rtl::Close_File(pipe_in[i]);
 						kiv_os_rtl::Close_File(pipe_out[i]);
 					}
-				}			
+				}
+				else {
+					kiv_os_rtl::Write_File(std_out, "Unknown command!\n", str_len("Unknown command!\n"), written);
+				}
 			}
 		}
 

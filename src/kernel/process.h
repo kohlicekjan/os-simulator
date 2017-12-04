@@ -22,7 +22,7 @@ typedef struct process_control_block {
 void HandleProcess(kiv_os::TRegisters &regs);
 
 //name - jmeno procesu, parent_pid - id rodice, arg - odkaz na strukturu s argumenty pro proces
-HRESULT createProcess(char *name, kiv_os::TProcess_Startup_Info *arg);
+int createProcess(char *name, kiv_os::TProcess_Startup_Info *arg);
 
 //spusteni procesu v novem vlakne
 void runProcess(kiv_os::TEntry_Point func, int pid, char *arg, bool stdinIsConsole);
