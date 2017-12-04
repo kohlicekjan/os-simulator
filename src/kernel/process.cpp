@@ -5,9 +5,13 @@
 #include "file_descriptor.h"
 #include "handles.h"
 #include "io.h"
-#include <string.h>
 
+#include <string.h>
 #include <chrono>
+
+#undef stdin
+#undef stdout
+#undef stderr
 
 std::mutex pcb_mutex;							// mutex pro zamèení PCB
 PCB * process_table[PCB_SIZE];	//PCB max 256
@@ -51,9 +55,9 @@ int createProcess(char *name, kiv_os::TProcess_Startup_Info *arg) {
 	std::vector<kiv_os::THandle> descriptors;
 	
 	//descriptory
-	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_in));
-	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_out));
-	descriptors.push_back(static_cast<kiv_os::THandle>(arg->std_err));
+	descriptors.push_back(static_cast<kiv_os::THandle>(arg->stdin));
+	descriptors.push_back(static_cast<kiv_os::THandle>(arg->stdout));
+	descriptors.push_back(static_cast<kiv_os::THandle>(arg->stderr));
 	
 	//vytvoøení záznamu o procesu
 	{
@@ -129,12 +133,12 @@ void runProcess(kiv_os::TEntry_Point func, int pid, char* arg, bool stdinIsConso
 	kiv_os::TRegisters regs;
 	kiv_os::TProcess_Startup_Info process_info;
 	process_info.arg = arg;
-	process_info.std_in = process_table[pid]->descriptors.at(0);
-	process_info.std_out = process_table[pid]->descriptors.at(1);
-	process_info.std_err = process_table[pid]->descriptors.at(2);
+	process_info.stdin = process_table[pid]->descriptors.at(0);
+	process_info.stdout = process_table[pid]->descriptors.at(1);
+	process_info.stderr = process_table[pid]->descriptors.at(2);
 	
 	if (memcmp(arg, "ps", 2) == 0) {
-		process_info.std_in = Get_PCB();
+		process_info.stdin = Get_PCB();
 	}
 	
 	//ulozeni hodnot do registru

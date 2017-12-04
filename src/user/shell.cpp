@@ -1,8 +1,6 @@
-
 #include "shell.h"
 #include "rtl.h"
 #include "parser.h"
-#include <stdio.h>
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
 	/*kiv_os::THandle std_out_ex = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
@@ -11,9 +9,9 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 	kiv_os::TProcess_Startup_Info* shell_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
 
-	kiv_os::THandle std_out = shell_info->std_out;
-	kiv_os::THandle std_in = shell_info->std_in;
-	kiv_os::THandle std_err = shell_info->std_err;
+	kiv_os::THandle std_out = shell_info->stdout;
+	kiv_os::THandle std_in = shell_info->stdin;
+	kiv_os::THandle std_err = shell_info->stderr;
 
 	kiv_os::TProcess_Startup_Info process_info;
 	
@@ -50,9 +48,9 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 		kiv_os_rtl::Read_File(std_in, buf_command, 1025, &filled);
 		char *input = buf_command;
 		
-		process_info.std_in = std_in;
-		process_info.std_out = std_out;
-		process_info.std_err = std_err;
+		process_info.stdin = std_in;
+		process_info.stdout = std_out;
+		process_info.stderr = std_err;
 		regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 
 		int pipe_count = 0;
@@ -84,10 +82,10 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				pipe_in[pipe_count] = pipe[0];
 				pipe_out[pipe_count] = pipe[1];
 				
-				process_info.std_out = pipe_in[pipe_count];
+				process_info.stdout = pipe_in[pipe_count];
 
 				if (pipe_count != 0) {
-					process_info.std_in = pipe_out[pipe_count - 1];
+					process_info.stdin = pipe_out[pipe_count - 1];
 				}
 				pipe_count++;
 				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
@@ -135,11 +133,11 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			char buffer[100];
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
-			process_info.std_out = std_out;
+			process_info.stdout = std_out;
 			if(argc >= 3){
 				if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
-					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
-					if (process_info.std_out == kiv_os::erInvalid_Handle) {
+					process_info.stdout = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					if (process_info.stdout == kiv_os::erInvalid_Handle) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
@@ -147,8 +145,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
-					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 4);
-					if (process_info.std_out == kiv_os::erInvalid_Handle) {
+					process_info.stdout = kiv_os_rtl::Create_File(arg[argc - 1], 4);
+					if (process_info.stdout == kiv_os::erInvalid_Handle) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
@@ -156,8 +154,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
-					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
-					if (process_info.std_err == kiv_os::erInvalid_Handle) {
+					process_info.stderr = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					if (process_info.stderr == kiv_os::erInvalid_Handle) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
@@ -165,8 +163,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
-					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 4);
-					if (process_info.std_err == kiv_os::erInvalid_Handle) {
+					process_info.stderr = kiv_os_rtl::Create_File(arg[argc - 1], 4);
+					if (process_info.stderr == kiv_os::erInvalid_Handle) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
@@ -177,7 +175,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 			
 			//vzdy pro shell udelat
 			if (input_cmp(command_name, str_len(command_name), "shell", str_len("shell"), true)) {
-				process_info.std_in = std_in;
+				process_info.stdin = std_in;
 			}
 
 			if (input_cmp(command_name, str_len(command_name), "dir", str_len("dir"), true)) {
@@ -196,7 +194,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
 				process_info.arg = command_part;
 				if (pipe_count != 0) {
-					process_info.std_in = pipe_out[pipe_count - 1];
+					process_info.stdin = pipe_out[pipe_count - 1];
 				}
 				regs.rdi.r = (decltype(regs.rdi.r))&process_info;
 				if (kiv_os_rtl::Create_Process(regs) == true) {
@@ -244,7 +242,7 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 			str_cpy(buffer, "Directory '", str_len("Directory '"));
 			str_cat(buffer, arg[1]);
 			str_cat(buffer, "' doesn't exist!\n");
-			kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+			kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
 
 			return;
 		}
@@ -258,7 +256,7 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 			str_cpy(buffer, "Directory '", str_len("Directory '"));
 			str_cat(buffer, arg[1]);
 			str_cat(buffer, "' doesn't exist!\n");
-			kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+			kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
 
 			return;
 		}
@@ -267,7 +265,7 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 	
 	str_cat(buffer, ":\n\n");
 
-	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+	kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
 
 	//precte obsah adresare
 	kiv_os_rtl::Read_File(dir_hnd, buffer, 1025, &written);
@@ -282,7 +280,7 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 	}
 
 	//vypise na konzoli
-	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+	kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
 
 	str_cpy(buffer, "\n\t", str_len("\n\t"));
 	str_cat(buffer, atoi(files, pom));
@@ -290,5 +288,5 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 	str_cat(buffer, atoi(dirs, pom));
 	str_cat(buffer, " Dir(s)\n");
 
-	kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
+	kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
 }

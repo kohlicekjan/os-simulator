@@ -9,9 +9,9 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 
 	char *arg = process_info->arg;
 
-	kiv_os::THandle std_in = process_info->std_in;
-	kiv_os::THandle std_out = process_info->std_out;
-	kiv_os::THandle std_err = process_info->std_err;
+	kiv_os::THandle std_in = process_info->stdin;
+	kiv_os::THandle std_out = process_info->stdout;
+	kiv_os::THandle std_err = process_info->stderr;
 
 	char file_name[2][1025];
 	int argc;

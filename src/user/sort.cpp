@@ -3,16 +3,14 @@
 #include "rtl.h"
 #include "parser.h"
 
-#include <stdio.h>
-
 size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 	kiv_os::TProcess_Startup_Info* process_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
 	
 	char *arg = process_info->arg;
 
-	kiv_os::THandle std_in = process_info->std_in;
-	kiv_os::THandle std_out = process_info->std_out;
-	kiv_os::THandle std_err = process_info->std_err;
+	kiv_os::THandle std_in = process_info->stdin;
+	kiv_os::THandle std_out = process_info->stdout;
+	kiv_os::THandle std_err = process_info->stderr;
 
 	char command[1025];
 	char args[100][1025];

@@ -54,8 +54,7 @@ namespace kiv_os {
 
 	struct TProcess_Startup_Info {
 		char *arg;			//pointer na parametry
-		//prejmenovani stdin apod. byli klicova slova?
-		THandle std_in, std_out, std_err;	//kazdy, ktery bude erInvalid_Handle, bude mit vychozi hodnotu
+		THandle stdin, stdout, stderr;	//kazdy, ktery bude erInvalid_Handle, bude mit vychozi hodnotu
 	};
 
 	/*

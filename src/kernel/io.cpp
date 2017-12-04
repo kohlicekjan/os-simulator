@@ -3,12 +3,11 @@
 #include "io.h"
 #include "kernel.h"
 #include "handles.h"
-#include "stdio.h"
 #include "file_descriptor.h"
 #include "file_system.h"
 #include "process.h"
 
-#include "pipe.h"
+#include <stdio.h>
 
 
 void HandleIO(kiv_os::TRegisters &regs) {
@@ -230,4 +229,16 @@ void Create_Pipe(kiv_os::TRegisters &regs) {
 	
 	regs.rcx.x = Convert_Native_Handle(in);
 	regs.rdx.x = Convert_Native_Handle(out);
+}
+
+kiv_os::THandle get_stdin() {
+	return Convert_Native_Handle(stdin);
+}
+
+kiv_os::THandle get_stdout() {
+	return Convert_Native_Handle(stdout);
+}
+
+kiv_os::THandle get_stderr() {
+	return Convert_Native_Handle(stderr);
 }

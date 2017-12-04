@@ -10,8 +10,7 @@ typedef struct pipe_data {
 	char args[1024];
 }pipe_data;
 
-void input_parser(char *input, int input_size, kiv_os::TRegisters &regs);
-void do_command(char args[][1025], int argc);
+void input_parser(char *input, int input_size);
 void str_cpy(char *destination, char *string, int size_of_string);
 int str_len(char *input, int max_index = -1);
 

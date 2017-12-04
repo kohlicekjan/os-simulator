@@ -3,7 +3,6 @@
 #include "rtl.h"
 #include "parser.h"
 
-#include <stdio.h>
 size_t __stdcall rd(const kiv_os::TRegisters &regs) {
 	//systemove volani do jadra
 	char arg[10][1025];
@@ -13,7 +12,7 @@ size_t __stdcall rd(const kiv_os::TRegisters &regs) {
 	size_t written;
 	char buffer[100];
 
-	kiv_os::THandle std_out = rd_info->std_out;
+	kiv_os::THandle std_out = rd_info->stdout;
 
 	parse_args(arg, &argc, rd_info->arg, str_len(rd_info->arg));
 

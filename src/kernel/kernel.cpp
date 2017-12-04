@@ -6,7 +6,9 @@
 #include "handles.h"
 #include <Windows.h>
 
-
+#undef stdin
+#undef stdout
+#undef stderr
 
 HMODULE User_Programs;
 
@@ -87,19 +89,22 @@ void __stdcall Run_VM() {
 
 		creating_os_structure();
 		char *boot_string = "Boot succesful\n";
-		fwrite(boot_string, sizeof(char), strlen(boot_string), stdout);
 		//spravne se ma shell spustit pres clone!
 		kiv_os::TRegisters regs{ 0 };
 
 		//struktura pro inicializaci argumentu procesu
 		kiv_os::TProcess_Startup_Info init;
 
-		init.std_in = Convert_Native_Handle(stdin);
-		init.std_out = Convert_Native_Handle(stdout);
-		init.std_err = Convert_Native_Handle(stderr);
+		init.stdin = get_stdin();
+		init.stdout = get_stdout();
+		init.stderr = get_stderr();
 		int pid = -1;
 		//vytvoreni init procesu s PID = 0
 		if (createProcess("shell", &init) == S_OK) {
+			regs.rdx.r = (decltype(regs.rdx.r))init.stdout;
+			regs.rdi.r = (decltype(regs.rdi.r))boot_string;
+			regs.rcx.r = (decltype(regs.rcx.r))strlen(boot_string);
+			Write_File(regs);
 			regs.rdx.r = (decltype(regs.rdx.r))&init;
 			shell(regs);
 		}

@@ -1,5 +1,4 @@
 #include "parser.h"
-#include <stdio.h>
 
 void input_parser(char *input, int input_size) {
 	char args[256][1025];

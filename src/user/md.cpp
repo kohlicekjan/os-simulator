@@ -14,7 +14,7 @@ size_t __stdcall md(const kiv_os::TRegisters &regs) {
 	size_t isDir = 1;
 	size_t written;
 
-	kiv_os::THandle std_out = md_info->std_out;
+	kiv_os::THandle std_out = md_info->stdout;
 
 	parse_args(arg, &argc, md_info->arg, str_len(md_info->arg));
 	
