@@ -65,8 +65,7 @@ bool kiv_os_rtl::Delete_File(const char* file_name, size_t isDir) {
 	regs.rdx.r = reinterpret_cast<decltype(regs.rdx.r)>(file_name);
 
 	regs.rcx.l = decltype(regs.rcx.l)(isDir);
-	Do_SysCall(regs);
-	return static_cast<kiv_os::THandle>(regs.rax.x);
+	return Do_SysCall(regs);
 }
 
 bool kiv_os_rtl::Set_File_Position(const kiv_os::THandle file_handle, size_t new_position) {

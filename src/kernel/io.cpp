@@ -147,12 +147,13 @@ void Delete_File(kiv_os::TRegisters &regs) {
 	int result;
 	FSystem *dir = find_child((char*)regs.rdx.r);
 
-	if (dir != nullptr) {
+	if (dir != nullptr && dir->isDirectory) {
 		result = delete_child(dir);
-		regs.rax.h = 0;
+		regs.rax.r = 0;
 	}
 	else {
-		regs.rax.h = kiv_os::erFile_Not_Found;
+		regs.flags.carry = 1;
+		regs.rax.r = kiv_os::erFile_Not_Found;
 	}
 }
 

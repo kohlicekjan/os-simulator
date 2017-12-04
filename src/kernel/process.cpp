@@ -191,8 +191,8 @@ void Wait_For(int miliseconds) {
 
 kiv_os::THandle Get_PCB() {
 	char buffer[100];
-	f_des* proc = open_file("C://system/proc/ps");
-	f_des* read = open_file("C://system/proc/ps", false, READ);
+	f_des* proc = open_file("C://system/proc/ps", false, WRITE);
+	f_des* read = open_file("C://system/proc/ps", false, READ_UPDATE);
 	
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr) {

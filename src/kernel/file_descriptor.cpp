@@ -36,7 +36,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	} else if(READ == mode) {
 		descriptor->writing = false;
 		if (file != nullptr) {
-			//return  (f_des *)INVALID_HANDLE_VALUE;
+			return  (f_des *)INVALID_HANDLE_VALUE;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
