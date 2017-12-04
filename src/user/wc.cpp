@@ -46,8 +46,10 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 
 	//vypis error
 	if (file == kiv_os::erInvalid_Handle) {
-		str_cpy(buffer, "Invalid Handle!\n", str_len("Invalid Handle!\n"));
-		kiv_os_rtl::Write_File(std_err, buffer, str_len(buffer), written);
+		str_cpy(buffer, "File '", str_len("File '"));
+		str_cat(buffer, args[argc - 1]);
+		str_cat(buffer, "' doesn't exist!\n");
+		kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 	}
 	else {
 		//vypis file
@@ -76,17 +78,17 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 			str_cat(buffer, atoi(lines, pom));
 			str_cat(buffer, "\n");
 		}
-		if (argc == 3 && input_cmp(args[1], 2, "-w", 2)) {
+		else if (argc == 3 && input_cmp(args[1], 2, "-w", 2)) {
 			str_cat(buffer, "Words: ");
 			str_cat(buffer, atoi(words, pom));
 			str_cat(buffer, "\n");
 		}
-		if (argc == 3 && input_cmp(args[1], 2, "-c", 2)) {
+		else if (argc == 3 && input_cmp(args[1], 2, "-c", 2)) {
 			str_cat(buffer, "Chars: ");
 			str_cat(buffer, atoi(chars, pom));
 			str_cat(buffer, "\n");
 		}
-		if (argc == 2) {
+		else if (argc == 2) {
 			str_cat(buffer, "Lines: ");
 			str_cat(buffer, atoi(lines, pom));
 			str_cat(buffer, "\tWords: ");
@@ -94,6 +96,9 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 			str_cat(buffer, "\tChars: ");
 			str_cat(buffer, atoi(chars, pom));
 			str_cat(buffer, "\n");
+		}
+		else {
+			str_cat(buffer, "Invalid argument!\n");
 		}
 
 		kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);

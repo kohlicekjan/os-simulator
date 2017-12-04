@@ -15,10 +15,15 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	std::string name = split_string(path).back();
 	FSystem *file = find_child(path);
 
+	//chce otevøít soubor místo složky
 	if (file != nullptr && isDir && !file->isDirectory) {
 		return (f_des *)INVALID_HANDLE_VALUE;
 	}
-	
+	//chce otevrit slozku misto souboru
+	if (file != nullptr && !isDir && file->isDirectory) {
+		return (f_des *)INVALID_HANDLE_VALUE;
+	}
+
 	if (WRITE == mode) {
 		descriptor->reading = false;
 		if (file != nullptr) {
@@ -39,7 +44,7 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 
 	} else if (WRITE_UPDATE == mode) {
 		if (file != nullptr) {
-			//file->content = EOF;
+			file->content = EOF;
 		}
 		else {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);

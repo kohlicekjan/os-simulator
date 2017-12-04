@@ -127,29 +127,44 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 
 		if (str_len(command_name) >= 2) {
 			char arg[256][1025];
+			char buffer[100];
 			int argc;
 			parse_args(arg, &argc, command_part, str_len(command_part));
 			process_info.std_out = std_out;
 			if(argc >= 3){
 				if (input_cmp(arg[argc - 2], 2, ">>", 2)) {
 					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					if (process_info.std_out == kiv_os::erInvalid_Handle) {
+						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
+						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+					}
 					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
-					kiv_os_rtl::Delete_File(arg[argc - 1], false);
-					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+					process_info.std_out = kiv_os_rtl::Create_File(arg[argc - 1], 4);
+					if (process_info.std_out == kiv_os::erInvalid_Handle) {
+						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
+						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+					}
 					//vymazani presmerovani z argumentù pøíkazu, 2 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				if (input_cmp(arg[argc - 2], 3, "2>>", 3)) {
 					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 6);
+					if (process_info.std_err == kiv_os::erInvalid_Handle) {
+						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
+						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+					}
 					//vymazani presmerovani z argumentù pøíkazu, 4 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
-					kiv_os_rtl::Delete_File(arg[argc - 1], false);
-					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 3);
+					process_info.std_err = kiv_os_rtl::Create_File(arg[argc - 1], 4);
+					if (process_info.std_err == kiv_os::erInvalid_Handle) {
+						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
+						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
+					}
 					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
