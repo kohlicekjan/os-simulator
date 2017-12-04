@@ -137,7 +137,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
-					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					//vymazani presmerovani z argumentù pøíkazu, 2 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 1, ">", 1)) {
@@ -155,7 +155,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
-					//vymazani presmerovani z argumentù pøíkazu, 4 je poèet mezer
+					//vymazani presmerovani z argumentù pøíkazu, 2 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				else if (input_cmp(arg[argc - 2], 2, "2>", 2)) {
@@ -164,7 +164,7 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						str_cpy(buffer, "Access denied!", str_len("Access denied!\n"));
 						kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 					}
-					//vymazani presmerovani z argumentù pøíkazu, 3 je poèet mezer
+					//vymazani presmerovani z argumentù pøíkazu, 2 je poèet mezer
 					command_part[str_len(command_part) - 2 - str_len(arg[argc - 1]) - str_len(arg[argc - 2])] = '\0';
 				}
 				//presmerovani stdin
