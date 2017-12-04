@@ -2,14 +2,6 @@
 #include "../api/api.h"
 
 
-typedef struct pipe_data {
-	char output_path[1024];
-	char proces[1024];
-	bool stdin_redirect;
-	bool stdout_redirect;
-	char args[1024];
-}pipe_data;
-
 void input_parser(char *input, int input_size);
 void str_cpy(char *destination, char *string, int size_of_string);
 int str_len(char *input, int max_index = -1);

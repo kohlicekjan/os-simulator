@@ -51,7 +51,7 @@ void HandleIO(kiv_os::TRegisters &regs) {
 		case kiv_os::scClose_Handle: {
 				HANDLE hnd = Resolve_kiv_os_Handle(regs.rdx.x);
 
-				regs.flags.carry = !close_file((f_des *)hnd) == S_OK;
+				regs.flags.carry = close_file((f_des *)hnd) == S_FALSE;
 				if (!regs.flags.carry) Remove_Handle(regs.rdx.x);				
 					else regs.rax.r = GetLastError();
 			}
