@@ -14,6 +14,10 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 	
 	std::string name = split_string(path).back();
 	FSystem *file = find_child(path);
+
+	if (file != nullptr && isDir && !file->isDirectory) {
+		return (f_des *)INVALID_HANDLE_VALUE;
+	}
 	
 	if (WRITE == mode) {
 		descriptor->reading = false;

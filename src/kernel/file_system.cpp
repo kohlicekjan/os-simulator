@@ -128,10 +128,10 @@ int delete_child(FSystem *node) {
 		}
 		else {
 			if ((*childIt)->isDirectory) {
-				node->parent->content += "+" + (*childIt)->filename + "\n";
+				node->parent->content += "\t<DIR>\t" + (*childIt)->filename + "\n";
 			}
 			else {
-				node->parent->content += " " + (*childIt)->filename + "\n";
+				node->parent->content += "\t<FILE>\t" + (*childIt)->filename + "\n";
 			}
 		}
 

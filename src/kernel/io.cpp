@@ -83,7 +83,7 @@ void Create_File(kiv_os::TRegisters &regs) {
 	
 	HANDLE result;
 	if (regs.rcx.l != 0) {
-		result = open_file((char*)regs.rdx.r, true);
+		result = open_file((char*)regs.rdx.r, true, regs.rcx.h);
 	}
 	else {
 		result = open_file((char*)regs.rdx.r, false, regs.rcx.h);
@@ -203,7 +203,7 @@ void Set_Current_Directory(kiv_os::TRegisters &regs) {
 	int i, j = 0;
 	char *buffer = reinterpret_cast<char *>(regs.rdx.r);
 	FSystem *node = find_child(buffer);
-	if (node == nullptr) {
+	if (node == nullptr || (node != nullptr && !node->isDirectory)) {
 		regs.rax.r = kiv_os::erFile_Not_Found;
 		regs.flags.carry = 1;
 		return;

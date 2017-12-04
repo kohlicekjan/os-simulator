@@ -216,11 +216,11 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 		argc--;
 	}
 	if (argc == 2) {
-		dir_hnd = kiv_os_rtl::Create_File(arg[1], 5);
+		dir_hnd = kiv_os_rtl::Create_File(arg[1], 5, true);
 		if (dir_hnd == kiv_os::erInvalid_Handle) {
 			str_cpy(buffer, "Directory '", str_len("Directory '"));
 			str_cat(buffer, arg[1]);
-			str_cat(buffer, " doesn't exist!\n");
+			str_cat(buffer, "' doesn't exist!\n");
 			kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 
 			return;
@@ -230,11 +230,11 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 	}
 	else {
 		kiv_os_rtl::Get_Current_Directory(cur_path, buffer_size);
-		dir_hnd = kiv_os_rtl::Create_File(cur_path, 5);
+		dir_hnd = kiv_os_rtl::Create_File(cur_path, 5, true);
 		if (dir_hnd == kiv_os::erInvalid_Handle) {
 			str_cpy(buffer, "Directory '", str_len("Directory '"));
 			str_cat(buffer, arg[1]);
-			str_cat(buffer, " doesn't exist!\n");
+			str_cat(buffer, "' doesn't exist!\n");
 			kiv_os_rtl::Write_File(process_info.std_out, buffer, str_len(buffer), written);
 
 			return;
