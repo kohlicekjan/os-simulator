@@ -1,6 +1,3 @@
-//
-// Created by BobrZlosyn on 09.11.2017.
-//
 
 #include "file_system.h"
 
@@ -245,60 +242,4 @@ std::vector<std::string> split_string(std::string str) {
 		pch = strtok_s(NULL, delims, &context);
 	}
 	return path;
-}
-
-/// <summary> printing whole file system 
-/// </summary> 
-void print_file_system() {
-	FSystem *node = get_root();
-
-	printf("\\ \n");
-	print_files(node, 1);
-}
-
-/// <summary> printing structure with recurse call
-/// <param name='dir'>dir where to start printing</param>
-/// <param name='depth'>depth of the dir</param>
-/// </summary> 
-void print_files(FSystem *dir, int depth) {
-	FSystem *pomNode;
-	std::vector<FSystem*>::iterator it;
-	std::vector<FSystem*> dirs;
-	std::vector<FSystem*> childrens = dir->children;
-
-
-	for (it = childrens.begin(); it != childrens.end(); it++) {
-		pomNode = *it;
-		if (pomNode->isDirectory) {
-			dirs.push_back(pomNode);
-			continue;
-		}
-
-		print_visual_depth(depth, pomNode);
-	}
-
-
-	for (it = dirs.begin(); it != dirs.end(); it++) {
-		print_visual_depth(depth, *it);
-		print_files(*it, depth + 1);
-	}
-}
-
-/// <summary> print tabs to show depth
-/// <param name='depth'>depth of the node</param>
-/// <param name='file'>file to be printed</param>
-/// </summary> 
-void print_visual_depth(int depth, FSystem *file) {
-	int i;
-	for (i = 0; i < depth; i++) {
-		printf("\t");
-	}
-
-	if (file->isDirectory) {
-		printf("+ %s \n", file->filename.c_str());
-	}
-	else {
-		printf("%s \n", file->filename.c_str());
-	}
-
 }

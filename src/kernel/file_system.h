@@ -21,9 +21,6 @@ typedef struct file_system {
 
 FSystem *create_root();
 FSystem *get_root();
-void print_file_system();
-void print_files(FSystem *dir, int depth);
-void print_visual_depth(int depth, FSystem *file);
 std::vector<std::string> split_string(std::string str);
 FSystem *create_child(std::string path, std::string name, bool isDirectory);
 FSystem *actual_node();

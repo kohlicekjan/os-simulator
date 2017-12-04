@@ -17,7 +17,6 @@ typedef struct file_descriptor {
 	std::string filename;
 	FSystem *file;
 	uint64_t open_type;
-	int open_clients;
 	bool reading;
 	bool writing;
 }f_des;

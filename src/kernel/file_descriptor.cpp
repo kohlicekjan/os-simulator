@@ -1,5 +1,3 @@
-#pragma once
-
 #include "file_descriptor.h"
 #include "file_system.h"
 #include <mutex>
