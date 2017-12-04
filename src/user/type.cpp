@@ -45,7 +45,7 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 		while(true){
 			kiv_os_rtl::Read_File(file, buffer, 100, &written);
 			if (written == 0) {
-				kiv_os_rtl::Write_File(std_out, "\n", str_len("\n"), written);
+				//kiv_os_rtl::Write_File(std_out, "\n", str_len("\n"), written);
 				break;
 			}
 			kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);

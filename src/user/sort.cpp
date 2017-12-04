@@ -70,6 +70,7 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		}
 		
 		parse_lines(lines, file_content, (int)written);
+		lines[num_lines - 1][0] = '\0';
 
 		if (asc) {
 			sort_asc(lines, num_lines);
