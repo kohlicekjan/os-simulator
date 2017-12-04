@@ -79,7 +79,8 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 				process_info.arg = command_part;
 				parse_args(arg, &argc, command_part, str_len(command_part));
 				regs.rdx.r = (decltype(regs.rdx.r))command_name;
-				kiv_os::THandle* pipe = kiv_os_rtl::Create_Pipe(pipe_in[pipe_count], pipe_out[pipe_count], pipe_count);
+				kiv_os::THandle pipe[2];
+				kiv_os_rtl::Create_Pipe(pipe_in[pipe_count], pipe_out[pipe_count], pipe_count, pipe);
 				pipe_in[pipe_count] = pipe[0];
 				pipe_out[pipe_count] = pipe[1];
 				
@@ -102,7 +103,6 @@ size_t __stdcall shell(kiv_os::TRegisters &regs) {
 						kiv_os_rtl::Write_File(std_out, "Unknown command!\n", str_len("Unknown command!\n"), written);
 					}
 				}	
-				
 				
 				command_argc = 0;
 				name_loaded = false;

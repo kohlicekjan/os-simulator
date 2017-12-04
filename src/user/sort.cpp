@@ -65,13 +65,13 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		char file_content[100000];
 		//vypis file
 		kiv_os_rtl::Read_File(file, file_content, 100000, &written);
-		int num_lines = count_lines(file_content, written);
+		int num_lines = count_lines(file_content, (int)written);
 		char** lines = new char*[num_lines];
 		for (int i = 0; i < num_lines; i++) {
 			lines[i] = new char[1025];
 		}
 		
-		parse_lines(lines, file_content, written);
+		parse_lines(lines, file_content, (int)written);
 
 		if (asc) {
 			sort_asc(lines, num_lines);
@@ -90,7 +90,6 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 
 void sort_asc(char words[][1025], int num_words) {
 	char pom[1025];
-	char max;
 	int max_index;
 
 	for (int i = 0; i < num_words - 1; i++) {
@@ -117,7 +116,6 @@ void sort_asc(char words[][1025], int num_words) {
 
 void sort_asc(char** lines, int num_lines) {
 	char pom[1025];
-	char max;
 	int max_index;
 
 	for (int i = 0; i < num_lines - 1; i++) {
@@ -144,7 +142,6 @@ void sort_asc(char** lines, int num_lines) {
 
 void sort_desc(char words[][1025], int num_words) {
 	char pom[1025];
-	char max;
 	int max_index;
 
 	for (int i = 0; i < num_words - 1; i++) {
@@ -171,7 +168,6 @@ void sort_desc(char words[][1025], int num_words) {
 
 void sort_desc(char** lines, int num_lines) {
 	char pom[1025];
-	char max;
 	int max_index;
 
 	for (int i = 0; i < num_lines - 1; i++) {

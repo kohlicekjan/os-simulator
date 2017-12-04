@@ -29,7 +29,7 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 		}
 		case kiv_os::scWait_For: {
 			if (regs.rcx.h != 0) {
-				Wait_For(regs.rcx.h, regs.rdx.r);
+				Wait_For(regs.rcx.h, static_cast<kiv_os::THandle>(regs.rdx.r));
 			}
 			else {
 				if (process_table[regs.rcx.l] == nullptr) {
@@ -37,7 +37,7 @@ void HandleProcess(kiv_os::TRegisters &regs) {
 					regs.flags.carry = 1;
 					return;
 				}
-				Wait_For(regs.rdx.r);
+				Wait_For((int)regs.rdx.r);
 			}
 			
 			break;
@@ -200,12 +200,12 @@ kiv_os::THandle Get_PCB() {
 	char buffer[100];
 	f_des* proc = open_file("C://system/proc/ps", false, WRITE);
 	f_des* read = open_file("C://system/proc/ps", false, READ_UPDATE);
-	
+	int tid;
 	for (int i = 0; i < PCB_SIZE; i++) {
 		if (process_table[i] != nullptr) {
-			//memset(buffer, ' ', 100);
-			sprintf_s(buffer, 100, "%d\t %d\t %s \t\t %s\n", i, process_table[i]->thread_id, process_table[i]->name, process_table[i]->path);
-			write_file(proc, buffer, strlen(buffer));
+			memcpy(&tid, &process_table[i]->thread_id, sizeof(process_table[i]->thread_id));
+			sprintf_s(buffer, 100, "%d\t %d\t %s \t\t %s\n", i, tid, process_table[i]->name, process_table[i]->path);
+			write_file(proc, buffer, (char)strlen(buffer));
 			
 		}
 	}

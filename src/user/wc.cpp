@@ -55,7 +55,7 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 		//vypis file
 		while (true) {
 			kiv_os_rtl::Read_File(file, buffer, 100, &written);
-			chars += written;
+			chars += (int)written;
 			for (int i = 0; i < written; i++) {
 				switch (buffer[i]) {
 				case '\n': lines++;

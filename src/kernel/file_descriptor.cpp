@@ -60,13 +60,13 @@ f_des *open_file(std::string path, bool isDir, uint64_t mode) {
 		if (file == nullptr) {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
 		}
-		descriptor->act_pos = file->content.length() - 1;
+		descriptor->act_pos = (int)file->content.length() - 1;
 
 	} else if (APPEND_UPDATE == mode) {
 		if (file == nullptr) {
 			file = create_child(path.substr(0, path.length() - name.length()), name, isDir);
 		}
-		descriptor->act_pos = file->content.length() - 1;
+		descriptor->act_pos = (int)file->content.length() - 1;
 
 	} else {
 		return  (f_des *)INVALID_HANDLE_VALUE;
@@ -138,7 +138,7 @@ char* read_file(f_des *des, char buffer[], int start_pos, int size_to_read, size
 	else {
 		sprintf_s(buffer, size_to_read, "%s", des->file->content.substr(start_pos, des->file->content.length()-1).c_str());
 		read = (des->file->content.length() - 1) - start_pos;
-		des->act_pos = start_pos + read;
+		des->act_pos = start_pos + (int)read;
 		//kvuli mezere na konci vypisu
 		buffer[read] = '\0';
 

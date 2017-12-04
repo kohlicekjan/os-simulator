@@ -108,18 +108,17 @@ bool kiv_os_rtl::Set_Current_Directory(const char * buffer) {
 	return Do_SysCall(regs);
 }
 
-kiv_os::THandle* kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out, int count) {
+bool kiv_os_rtl::Create_Pipe(kiv_os::THandle file_in, kiv_os::THandle file_out, int count, kiv_os::THandle pipe[2]) {
 	kiv_os::TRegisters regs = Prepare_SysCall_Context(kiv_os::scIO, kiv_os::scCreate_Pipe);
 	regs.rcx.x = static_cast<decltype(regs.rcx.x)>(file_in);
 	regs.rdx.x = static_cast<decltype(regs.rdx.x)>(file_out);
 	regs.rdi.r = count;
-	Do_SysCall(regs);
+	bool result = Do_SysCall(regs);
 	
-	kiv_os::THandle pipe[2];
 	pipe[0] = static_cast<kiv_os::THandle>(regs.rcx.x);
 	pipe[1] = static_cast<kiv_os::THandle>(regs.rdx.x);
 
-	return pipe;
+	return result;
 }
 
 bool kiv_os_rtl::Create_Process(kiv_os::TRegisters &regs) {
@@ -136,12 +135,12 @@ bool kiv_os_rtl::Wait_For(kiv_os::TRegisters &regs) {
 	size_t pid = regs.rax.r;
 	size_t time = regs.rcx.r;
 	size_t cur_pid = regs.rdi.r;
-	kiv_os::THandle hnd = regs.rdx.r;
+	kiv_os::THandle hnd = static_cast<kiv_os::THandle>(regs.rdx.r);
 	regs = Prepare_SysCall_Context(kiv_os::scProc, kiv_os::scWait_For);
 	regs.rcx.h = (decltype(regs.rcx.h))pid;
 	if (pid == 0) {
 		regs.rdx.r = time;
-		regs.rcx.l = cur_pid;
+		regs.rcx.l = (decltype(regs.rcx.l))cur_pid;
 	}
 	else {
 		regs.rdx.r = hnd;

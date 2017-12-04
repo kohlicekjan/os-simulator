@@ -129,13 +129,13 @@ void Read_File(kiv_os::TRegisters &regs) {
 	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
 	//if (!regs.flags.carry) regs.flags.carry = !ReadFile(hnd, reinterpret_cast<void*>(regs.rdi.r), (DWORD)regs.rcx.r, &read, NULL);
 	if (!regs.flags.carry) {
-		regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), reinterpret_cast<f_des*>(hnd)->act_pos, regs.rcx.r, read);
+		regs.rax.r = (decltype(regs.rax.r))read_file(reinterpret_cast<f_des*>(hnd), reinterpret_cast<char*>(regs.rdi.r), reinterpret_cast<f_des*>(hnd)->act_pos, (int)regs.rcx.r, read);
 	}
 	if (!regs.flags.carry) regs.rax.r = read;
 	else regs.rax.r = GetLastError();
 
 	if (hnd == stdin) {
-		if (fgets(reinterpret_cast<char*>(regs.rdi.r), regs.rcx.r, stdin) == NULL) {
+		if (fgets(reinterpret_cast<char*>(regs.rdi.r), (int)regs.rcx.r, stdin) == NULL) {
 			reinterpret_cast<char*>(regs.rdi.r)[0] = 26;
 		}
 		
@@ -162,7 +162,7 @@ void Set_File_Position(kiv_os::TRegisters &regs) {
 	regs.flags.carry = hnd == INVALID_HANDLE_VALUE;
 	
 	if (!regs.flags.carry) {
-		set_act_pos(reinterpret_cast<f_des*>(hnd), regs.rdi.r);
+		set_act_pos(reinterpret_cast<f_des*>(hnd), (int)regs.rdi.r);
 
 	}
 }

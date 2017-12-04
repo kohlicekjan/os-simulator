@@ -2,10 +2,7 @@
 #include <stdio.h>
 
 void input_parser(char *input, int input_size) {
-	int i;
 	char args[256][1025];
-	char command_part[1025];
-	int command_argc = 0;
 	int argc = 0;
 	parse_args(args, &argc, input, input_size);
 

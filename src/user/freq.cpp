@@ -32,12 +32,13 @@ size_t __stdcall freq(const kiv_os::TRegisters &regs) {
 			byte_freq[input[i]]++;
 		}
 	}
+	char hex[2];
 	for (int i = 0; i < 256; i++) {
-		buffer[0] = '\0';
-		
+		buffer[0] = '\0';	
 		if (byte_freq[i] > 0) {
+			dec_To_Hex(i, hex);
 			str_cat(buffer, "0x");
-			str_cat(buffer, dec_To_Hex(i));
+			str_cat(buffer, hex);
 			str_cat(buffer, ": ");
 			str_cat(buffer, atoi(byte_freq[i], pom));
 			str_cat(buffer, "\n");
@@ -48,8 +49,7 @@ size_t __stdcall freq(const kiv_os::TRegisters &regs) {
 	return 0;
 }
 
-char* dec_To_Hex(int decimal) {
-	char hex[2];
+void dec_To_Hex(int decimal, char hex[]) {
 	switch (decimal / 16) {
 	case 10: hex[0] = 'A'; break;
 	case 11: hex[0] = 'B'; break;
@@ -68,5 +68,4 @@ char* dec_To_Hex(int decimal) {
 	case 15: hex[1] = 'F'; break;
 	default: hex[1] = (char)(decimal % 16 + 48);
 	}
-	return hex;
 }
