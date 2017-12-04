@@ -3,10 +3,6 @@
 #include "parser.h"
 
 size_t __stdcall shell(kiv_os::TRegisters &regs) {
-	/*kiv_os::THandle std_out_ex = kiv_os_rtl::Create_File("C://system/term/CONOUT$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_in_ex = kiv_os_rtl::Create_File("C://system/term/CONIN$", 2);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN
-	kiv_os::THandle std_err_ex = kiv_os_rtl::Create_File("C://system/term/CONERR$", 1);	//nahradte systemovym resenim, zatim viz Console u CreateFile na MSDN */
-
 	kiv_os::TProcess_Startup_Info* shell_info = reinterpret_cast<kiv_os::TProcess_Startup_Info *>(regs.rdx.r);
 
 	kiv_os::THandle std_out = shell_info->stdout;
@@ -243,7 +239,6 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 			str_cat(buffer, arg[1]);
 			str_cat(buffer, "' doesn't exist!\n");
 			kiv_os_rtl::Write_File(process_info.stdout, buffer, str_len(buffer), written);
-
 			return;
 		}
 		str_cat(buffer, arg[1]);
@@ -269,6 +264,7 @@ void dir(char arg[256][1025], int argc, char * cur_path, kiv_os::TProcess_Startu
 
 	//precte obsah adresare
 	kiv_os_rtl::Read_File(dir_hnd, buffer, 1025, &written);
+	kiv_os_rtl::Close_File(dir_hnd);
 
 	for (int i = 0; i < str_len(buffer); i++) {
 		if (buffer[i] == '<' && buffer[i + 1] == 'D') {

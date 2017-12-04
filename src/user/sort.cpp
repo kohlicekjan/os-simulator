@@ -81,6 +81,10 @@ size_t __stdcall sort(const kiv_os::TRegisters &regs) {
 		for (int i = 0; i < num_lines; i++) {
 			kiv_os_rtl::Write_File(std_out, lines[i], str_len(lines[i]), written);
 		}
+
+		if (file != std_in) {
+			kiv_os_rtl::Close_File(file);
+		}
 	}
 	
 	return 0;

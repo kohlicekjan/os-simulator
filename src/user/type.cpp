@@ -50,6 +50,9 @@ size_t __stdcall type(const kiv_os::TRegisters &regs) {
 			}
 			kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 		}
+		if (file != std_in) {
+			kiv_os_rtl::Close_File(file);
+		}
 	}
 
 

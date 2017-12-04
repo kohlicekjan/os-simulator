@@ -29,6 +29,7 @@ size_t __stdcall md(const kiv_os::TRegisters &regs) {
 			str_cat(buffer, "' already exists.\n");
 			kiv_os_rtl::Write_File(std_out, buffer, str_len(buffer), written);
 		}
+		kiv_os_rtl::Close_File(new_dir);
 	}
 	else {
 		kiv_os_rtl::Write_File(std_out, "Invalid argument!\n", str_len("Invalid argument!\n"), written);

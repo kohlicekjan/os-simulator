@@ -70,6 +70,11 @@ size_t __stdcall wc(const kiv_os::TRegisters &regs) {
 				break;
 			}
 		}
+
+		if (file != std_in) {
+			kiv_os_rtl::Close_File(file);
+		}
+
 		buffer = new char[100];
 		buffer[0] = '\0';
 

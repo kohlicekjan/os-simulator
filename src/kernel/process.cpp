@@ -213,5 +213,6 @@ kiv_os::THandle Get_PCB() {
 			
 		}
 	}
+
 	return Convert_Native_Handle(read);
 }
